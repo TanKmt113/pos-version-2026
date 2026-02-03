@@ -56,33 +56,60 @@ export function DesktopSidebar({
             )}
             {isCollapsed ? (
               <div className="grid gap-1">
-                {navItems.map((item) => (
-                  <Tooltip key={item.name} delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          "flex items-center justify-center rounded-md p-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                          isActive(item.href)
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground"
-                        )}
-                      >
-                        <item.icon
+                {navItems.map((item) => {
+                  // Nếu item có children, hiển thị icon với tooltip (không link)
+                  if ('children' in item && item.children) {
+                    return (
+                      <Tooltip key={item.name} delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <button
+                            className={cn(
+                              "flex items-center justify-center rounded-md p-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                              "text-muted-foreground"
+                            )}
+                          >
+                            <item.icon className="h-5 w-5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side={direction === "rtl" ? "left" : "right"}
+                        >
+                          {item.name}
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  }
+
+                  // Item có href - hiển thị như link
+                  const href = item.href
+                  return (
+                    <Tooltip key={item.name} delayDuration={0}>
+                      <TooltipTrigger asChild>
+                        <Link
+                          href={href}
                           className={cn(
-                            "h-5 w-5",
-                            isActive(item.href) && "text-primary"
+                            "flex items-center justify-center rounded-md p-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                            isActive(href)
+                              ? "bg-primary/10 text-primary"
+                              : "text-muted-foreground"
                           )}
-                        />
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side={direction === "rtl" ? "left" : "right"}
-                    >
-                      {item.name}
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
+                        >
+                          <item.icon
+                            className={cn(
+                              "h-5 w-5",
+                              isActive(href) && "text-primary"
+                            )}
+                          />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side={direction === "rtl" ? "left" : "right"}
+                      >
+                        {item.name}
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                })}
               </div>
             ) : (
               <NavigationItems
@@ -118,7 +145,7 @@ export function DesktopSidebar({
               </TooltipContent>
             </Tooltip>
           ) : (
-            <UserProfile isCollapsed={isCollapsed} />
+            <UserProfile mobile isCollapsed={isCollapsed} />
           )}
         </div>
       </div>

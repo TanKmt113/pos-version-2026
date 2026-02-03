@@ -1,7 +1,7 @@
 import "@/app/globals.css";
 import { Layout } from "@/components/layout";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Metadata } from "next";
 import { ReactNode } from "react";
 
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Ứng dụng POS mạnh mẽ giúp bạn quản lý bán lẻ một cách nhanh chóng và hiệu quả.",
 };
 
-const poppins = Poppins({
+const inter = Inter({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
@@ -25,7 +25,7 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="vi" suppressHydrationWarning>
-      <body className={poppins.className}>
+      <body className={inter.className}>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

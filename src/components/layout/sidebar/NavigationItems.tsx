@@ -99,7 +99,7 @@ export function NavigationItems({
                 {(!isCollapsed || mobile) && (
                   <>
                     <span className={cn(
-                      "flex-1 truncate text-left transition-colors",
+                      "flex-1 text-left transition-colors whitespace-normal break-words leading-tight",
                       active ? "font-medium" : "font-normal"
                     )}>
                       {item.name}
@@ -108,7 +108,7 @@ export function NavigationItems({
                     {/* Chevron icon */}
                     <ChevronDown
                       className={cn(
-                        "h-4 w-4 transition-transform duration-200",
+                        "h-4 w-4 shrink-0 transition-transform duration-200",
                         isOpen && "rotate-180"
                       )}
                     />
@@ -143,9 +143,9 @@ export function NavigationItems({
                           onClick={onClick}
                         >
                           {'icon' in child && child.icon && (
-                            <child.icon className="h-4 w-4" />
+                            <child.icon className="h-4 w-4 shrink-0" />
                           )}
-                          <span className="truncate">{child.name}</span>
+                          <span className="whitespace-normal break-words leading-tight">{child.name}</span>
                         </Link>
                       )
                     })}
@@ -198,7 +198,7 @@ export function NavigationItems({
             {/* Item Name */}
             {(!isCollapsed || mobile) && (
               <span className={cn(
-                "truncate transition-colors",
+                "whitespace-normal break-words leading-tight transition-colors",
                 active ? "font-medium" : "font-normal"
               )}>
                 {item.name}
