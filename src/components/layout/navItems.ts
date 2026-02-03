@@ -1,42 +1,31 @@
 import {
-  type LucideIcon,
-  LayoutDashboard,
+  Home,
+  Wallet,
+  PieChart,
+  Receipt,
   Settings,
+  ShoppingCart,
   Package,
   Users,
-  Truck,
-  DollarSign,
-  Tags,
-  ShoppingCart,
-  Wallet,
   BarChart3,
-  UserCog,
-  Shield,
+  FileText,
+  TrendingUp,
   Store,
   Building2,
-  CreditCard,
-  FileText,
-  Boxes,
   Layers,
+  UserCog,
+  Warehouse,
+  Tag,
   Ruler,
-  UsersRound,
-  Award,
-  AlertTriangle,
-  Contact,
-  FolderTree,
-  CircleDollarSign,
-  ListOrdered,
-  TrendingUp,
-  Coins,
-  Monitor,
-  BadgePercent,
+  ShoppingBag,
+  UserCircle,
+  Truck,
+  PackageOpen,
+  DollarSign,
   Ticket,
-  Receipt,
-  PlusCircle,
   BookOpen,
-  ClipboardList,
-  PackageSearch,
-  QrCode,
+  CreditCard,
+  type LucideIcon
 } from "lucide-react"
 
 // Type cho menu item con
@@ -50,221 +39,101 @@ interface NavChildItem {
 type NavItem = {
   name: string
   icon: LucideIcon
+  badge?: string | number
 } & (
   | { href: string; children?: never }
   | { href?: never; children: NavChildItem[] }
 )
 
 const navItems: NavItem[] = [
-  { name: "Tổng quan", href: "/", icon: LayoutDashboard },
   {
-    name: 'Thiết lập hệ thống',
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: Home
+  },
+  {
+    name: "Thiết lập hệ thống",
     icon: Settings,
     children: [
-      {
-        name: 'Danh mục người dùng',
-        href: "/users",
-        icon: UserCog,
-      },
-      {
-        name: 'Vai trò người dùng',
-        href: "/roles",
-        icon: Shield,
-      },
-      {
-        name: 'Thiết lập quầy hàng',
-        href: "/counters",
-        icon: Store,
-      },
-      {
-        name: 'Thiết lập cửa hàng',
-        href: "/stores",
-        icon: Building2,
-      },
-      {
-        name: 'Phương thức thanh toán',
-        href: "/payment-methods",
-        icon: CreditCard,
-      },
-      {
-        name: 'Hóa đơn điện tử',
-        href: "/e-invoices",
-        icon: FileText,
-      },
-      {
-        name: 'Thiết lập chung hệ thống',
-        href: "/general-settings",
-        icon: Settings,
-      },
-      {
-        name: 'Danh mục hàng hóa',
-        href: "/product-categories",
-        icon: Boxes,
-      },
+      { name: "Danh mục hạch toán", href: "/system/accounting-category" },
+      { name: "Vai trò người dùng", href: "/system/user-roles" },
+      { name: "Kho hàng/Nhóm kho/Tài khoản", href: "/system/warehouse" },
+      { name: "Thiết lập cửa hàng", href: "/system/store-setup" },
+      { name: "Thiết lập công ty", href: "/system/company-setup" },
+      { name: "Phương thức thanh toán", href: "/system/payment-methods" },
+      { name: "Thiết lập Sổ", href: "/system/book-setup" },
+      { name: "Thiết lập chương hệ thống", href: "/system/system-config" },
     ]
   },
   {
-    name: 'Quản lý hàng hóa',
+    name: "Quản lý hàng hóa",
     icon: Package,
     children: [
-      {
-        name: 'Quản lý hàng hóa',
-        href: "/products/list",
-        icon: Package,
-      },
-      {
-        name: 'Nhóm hàng hóa',
-        href: "/products/groups",
-        icon: Layers,
-      },
-      {
-        name: 'Đơn vị tính',
-        href: "/products/units",
-        icon: Ruler,
-      },
-      {
-        name: 'Nhóm đơn vị tính',
-        href: "/products/unit-groups",
-        icon: FolderTree,
-      },
+      { name: "Danh mục hàng hóa", href: "/products/list" },
+      { name: "Nhóm hàng hóa", href: "/products/groups" },
+      { name: "Đơn vị tính", href: "/products/units" },
     ]
   },
   {
-    name: 'Quản lý khách hàng',
+    name: "Quản lý khách hàng",
     icon: Users,
     children: [
-      {
-        name: 'Danh sách khách hàng',
-        href: "/customers/list",
-        icon: UsersRound,
-      },
-      {
-        name: 'Tích điểm & hạng thẻ',
-        href: "/customers/loyalty",
-        icon: Award,
-      },
-      {
-        name: 'Danh sách khách hàng cảnh báo',
-        href: "/customers/warnings",
-        icon: AlertTriangle,
-      },
+      { name: "Danh sách khách hàng", href: "/customer" },
+      { name: "Tạo đơn hàng bán", href: "/customer/create-order" },
+      { name: "Danh sách đơn hàng bán", href: "/customer/orders" },
+      { name: "Danh sách hóa đơn", href: "/customer/invoices" },
     ]
   },
   {
-    name: 'Quản lý nhà cung cấp',
+    name: "Quản lý nhà cung cấp",
     icon: Truck,
     children: [
-      {
-        name: 'Danh sách nhà cung cấp',
-        href: "/suppliers/list",
-        icon: Contact,
-      },
-      {
-        name: 'Nhóm nhà cung cấp',
-        href: "/suppliers/groups",
-        icon: FolderTree,
-      },
+      { name: "Danh sách nhà cung cấp", href: "/supplier/list" },
+      { name: "Nhóm nhà cung cấp", href: "/supplier/groups" },
+      { name: "Danh sách đơn hàng mua", href: "/supplier/purchase-orders" },
+      { name: "Danh sách hóa đơn nhập", href: "/supplier/import-invoices" },
+      { name: "Trả hàng", href: "/supplier/returns" },
     ]
   },
   {
-    name: 'Bảng giá nguyên liệu',
+    name: "Quản lý gói nguyên liệu",
+    icon: PackageOpen,
+    children: [
+      { name: "Danh sách gói nguyên liệu", href: "/materials/packages" },
+      { name: "Danh sách hóa đơn nguyên liệu", href: "/materials/invoices" },
+      { name: "Tạo gói", href: "/materials/create-package" },
+      { name: "Báo cáo chi phí sản xuất", href: "/materials/production-cost-report" },
+    ]
+  },
+  {
+    name: "Quy tắc giá",
     icon: DollarSign,
     children: [
-      {
-        name: 'Danh sách mã giá',
-        href: "/pricing/codes",
-        icon: CircleDollarSign,
-      },
-      {
-        name: 'Danh sách bảng giá',
-        href: "/pricing/price-lists",
-        icon: ListOrdered,
-      },
-      {
-        name: 'Tỷ giá',
-        href: "/pricing/exchange-rates",
-        icon: TrendingUp,
-      },
-      {
-        name: 'Đầu chờ tích hợp với bảng giá hiển thị giá vàng/bạc',
-        href: "/pricing/gold-silver-display",
-        icon: Monitor,
-      },
+      { name: "Danh sách giá mua, đơn", href: "/pricing/purchase-list" },
+      { name: "Chính sách giá mua, đơn", href: "/pricing/purchase-policy" },
+      { name: "Chính sách giá bán hàng", href: "/pricing/sales-policy" },
+      { name: "Chương trình khuyến mãi", href: "/pricing/promotions" },
+      { name: "Voucher/Coupon", href: "/pricing/vouchers" },
     ]
   },
   {
-    name: 'Quy tắc giá mua, giá bán',
-    icon: Tags,
+    name: "Sổ quỹ",
+    icon: BookOpen,
     children: [
-      {
-        name: 'Chính sách giá bán',
-        href: "/price-rules/selling",
-        icon: Coins,
-      },
-      {
-        name: 'Chính sách giá mua, đổi',
-        href: "/price-rules/buying",
-        icon: TrendingUp,
-      },
+      { name: "Danh mục phiếu thu/chi", href: "/cashbook/categories" },
+      { name: "Tạo phiếu thu chi/Ví tiền", href: "/cashbook/create" },
+      { name: "Báo cáo tồn quỹ", href: "/cashbook/balance-report" },
     ]
   },
   {
-    name: 'Chính sách bán hàng',
-    icon: ShoppingCart,
-    children: [
-      {
-        name: 'Chương trình khuyến mại',
-        href: "/sales-policy/promotions",
-        icon: BadgePercent,
-      },
-      {
-        name: 'Voucher/Coupon',
-        href: "/sales-policy/vouchers",
-        icon: Ticket,
-      },
-      {
-        name: 'Danh mục phiếu thu/phiếu chi',
-        href: "/sales-policy/receipt-categories",
-        icon: Receipt,
-      },
-      {
-        name: 'Tạo phiếu thu/chi độc lập',
-        href: "/sales-policy/create-receipt",
-        icon: PlusCircle,
-      },
-    ]
+    name: "Báo cáo",
+    href: "/reports",
+    icon: BarChart3
   },
   {
-    name: 'Sổ quỹ',
-    icon: Wallet,
-    children: [
-      {
-        name: 'Danh mục phiếu thu/phiếu chi',
-        href: "/cash-book/categories",
-        icon: BookOpen,
-      },
-      {
-        name: 'Tạo phiếu thu/chi độc lập',
-        href: "/cash-book/create",
-        icon: PlusCircle,
-      },
-    ]
-  },
-  {
-    name: 'Báo cáo',
-    icon: BarChart3,
-    children: [
-      {
-        name: 'Báo cáo tồn kho quầy hàng',
-        href: "/reports/inventory",
-        icon: ClipboardList,
-      },
-      {
-        name: 'Báo cáo thông tin Serial/Lô',
-        href: "/reports/serial-batch",
-        icon: QrCode,
-      },
-    ]
+    name: "Mẫu in",
+    href: "/template-invoice",
+    icon: FileText
   },
 ]
 

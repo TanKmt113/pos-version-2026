@@ -11,6 +11,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/Tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/Popover";
 import { cn } from "@/shared/utils/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -57,39 +62,68 @@ export function DesktopSidebar({
             {isCollapsed ? (
               <div className="grid gap-1">
                 {navItems.map((item) => {
-                  // Nếu item có children, hiển thị icon với tooltip (không link)
-                  if ('children' in item && item.children) {
+                  // Check if item has children (submenu)
+                  const hasChildren = 'children' in item && item.children && item.children.length > 0;
+                  const itemHref = 'href' in item ? item.href : undefined;
+                  const active = itemHref ? isActive(itemHref) : false;
+
+                  // If item has children, show as Popover
+                  if (hasChildren) {
                     return (
-                      <Tooltip key={item.name} delayDuration={0}>
-                        <TooltipTrigger asChild>
-                          <button
-                            className={cn(
-                              "flex items-center justify-center rounded-md p-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                              "text-muted-foreground"
-                            )}
-                          >
-                            <item.icon className="h-5 w-5" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent
+                      <Popover key={item.name}>
+                        <Tooltip delayDuration={0}>
+                          <TooltipTrigger asChild>
+                            <PopoverTrigger asChild>
+                              <button
+                                className={cn(
+                                  "flex items-center justify-center rounded-md p-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                                  "text-muted-foreground"
+                                )}
+                              >
+                                <item.icon className="h-5 w-5" />
+                              </button>
+                            </PopoverTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent side={direction === "rtl" ? "left" : "right"}>
+                            {item.name}
+                          </TooltipContent>
+                        </Tooltip>
+                        <PopoverContent
                           side={direction === "rtl" ? "left" : "right"}
+                          align="start"
+                          className="w-56 p-2"
                         >
-                          {item.name}
-                        </TooltipContent>
-                      </Tooltip>
-                    )
+                          <div className="space-y-1">
+                            <div className="px-2 py-1.5 text-sm font-semibold">{item.name}</div>
+                            {item.children?.map((child) => (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                className={cn(
+                                  "block rounded-md px-2 py-1.5 text-sm hover:bg-accent",
+                                  isActive(child.href)
+                                    ? "bg-primary/10 text-primary font-medium"
+                                    : "text-muted-foreground"
+                                )}
+                              >
+                                {child.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    );
                   }
 
-                  // Item có href - hiển thị như link
-                  const href = item.href
+                  // Regular item with href
                   return (
                     <Tooltip key={item.name} delayDuration={0}>
                       <TooltipTrigger asChild>
                         <Link
-                          href={href}
+                          href={itemHref!}
                           className={cn(
                             "flex items-center justify-center rounded-md p-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                            isActive(href)
+                            active
                               ? "bg-primary/10 text-primary"
                               : "text-muted-foreground"
                           )}
@@ -97,7 +131,7 @@ export function DesktopSidebar({
                           <item.icon
                             className={cn(
                               "h-5 w-5",
-                              isActive(href) && "text-primary"
+                              active && "text-primary"
                             )}
                           />
                         </Link>
@@ -108,7 +142,7 @@ export function DesktopSidebar({
                         {item.name}
                       </TooltipContent>
                     </Tooltip>
-                  )
+                  );
                 })}
               </div>
             ) : (
