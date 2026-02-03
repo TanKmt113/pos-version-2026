@@ -2,7 +2,8 @@
 
 import { ReactNode } from "react";
 import { Button } from "../ui/Button";
-import { BarChart, Plus, User } from "lucide-react";
+import { Badge } from "../ui/Badge";
+import { BarChart, Plus, User, X, FileText } from "lucide-react";
 
 interface HeaderTabsProps {
   children?: ReactNode;
@@ -10,41 +11,56 @@ interface HeaderTabsProps {
 
 export const HeaderTabs = ({ children }: HeaderTabsProps) => {
   return (
-    <div className="w-full bg-primary">
-      <div className="flex justify-between items-center gap-5 px-2">
-        <div className="flex gap-2 text-white pt-2">
-          <div className="w-[300px] py-2 mr-16">{children}</div>
-          <div className="active w-[130px] bg-gray-200 tab-invoice flex items-center justify-around hover:cursor-pointer hover:bg-primary hover:rounded-md hover:transition-colors hover:duration-300">
-            <span className="font-sans text-white">Hóa đơn</span>
-            <button className="text-white btn-remove">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-          <div>
-            <Button>
-              <Plus />
+    <div className="w-full bg-gradient-to-r from-primary via-primary to-primary/90 shadow-lg">
+      <div className="flex justify-between items-center gap-5 px-4 py-2">
+        {/* Left Section - Search & Tabs */}
+        <div className="flex items-center gap-3 flex-1">
+          {/* Search Box */}
+          <div className="w-[320px]">{children}</div>
+
+          {/* Active Invoice Tab */}
+          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/20 transition-all hover:bg-white/20">
+            <FileText className="h-4 w-4 text-white" />
+            <span className="font-medium text-white text-sm">Hóa đơn #001</span>
+            <Badge variant="secondary" className="ml-2 bg-green-500 text-white text-xs px-2 py-0.5">
+              Đang chỉnh sửa
+            </Badge>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-6 w-6 ml-2 hover:bg-white/20 text-white rounded-full"
+            >
+              <X className="h-3 w-3" />
             </Button>
           </div>
-        </div>
-        <div className="flex items-center">
-          <Button>
-            <User />
+
+          {/* Add New Tab Button */}
+          <Button
+            size="sm"
+            className="gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm transition-all"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="text-sm">Tạo mới</span>
           </Button>
-          <Button>
-            <BarChart />
+        </div>
+
+        {/* Right Section - Action Buttons */}
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="ghost"
+            className="gap-2 hover:bg-white/10 text-white backdrop-blur-sm transition-all"
+          >
+            <User className="h-4 w-4" />
+            <span className="text-sm hidden md:inline">Khách hàng</span>
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="gap-2 hover:bg-white/10 text-white backdrop-blur-sm transition-all"
+          >
+            <BarChart className="h-4 w-4" />
+            <span className="text-sm hidden md:inline">Báo cáo</span>
           </Button>
         </div>
       </div>

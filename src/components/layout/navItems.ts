@@ -1,4 +1,17 @@
-import { Home, Wallet, PieChart, Receipt, Settings, type LucideIcon } from "lucide-react"
+import { 
+  Home, 
+  Wallet, 
+  PieChart, 
+  Receipt, 
+  Settings, 
+  ShoppingCart,
+  Package,
+  Users,
+  BarChart3,
+  FileText,
+  TrendingUp,
+  type LucideIcon 
+} from "lucide-react"
 
 // Type cho menu item con
 interface NavChildItem {
@@ -11,26 +24,65 @@ interface NavChildItem {
 type NavItem = {
   name: string
   icon: LucideIcon
+  badge?: string | number
 } & (
   | { href: string; children?: never }
   | { href?: never; children: NavChildItem[] }
 )
 
 const navItems: NavItem[] = [
-  { name: "Tổng quan", href: "/", icon: Home },
-  { name: "Sổ quỹ", href: "/wallets", icon: Wallet },
-  { name: "Giao dịch", href: "/bills", icon: Receipt },
-  { name: "Báo cáo", href: "/budget", icon: PieChart },
-  { name: "Thiết lập", href: "/settings", icon: Settings },
-  // Ví dụ menu có children:
-  // {
-  //   name: "Thiết lập",
-  //   icon: Settings,
-  //   children: [
-  //     { name: "Cài đặt chung", href: "/settings/general", icon: Settings },
-  //     { name: "Tài khoản", href: "/settings/account" },
-  //   ]
-  // },
+  { 
+    name: "Dashboard", 
+    href: "/dashboard", 
+    icon: Home 
+  },
+  { 
+    name: "Bán hàng", 
+    icon: ShoppingCart,
+    children: [
+      { name: "Hóa đơn", href: "/invoice", icon: FileText },
+      { name: "Đổi trả", href: "/return-goods", icon: Receipt },
+      { name: "Trao đổi", href: "/exchange", icon: TrendingUp },
+    ]
+  },
+  { 
+    name: "Mua hàng", 
+    href: "/purchase", 
+    icon: Package 
+  },
+  { 
+    name: "Khách hàng", 
+    href: "/customer", 
+    icon: Users 
+  },
+  { 
+    name: "Sản phẩm", 
+    icon: Package,
+    children: [
+      { name: "Danh sách SP", href: "/products/list" },
+      { name: "Danh mục", href: "/products/categories" },
+      { name: "Kho hàng", href: "/products/inventory" },
+    ]
+  },
+  { 
+    name: "Báo cáo", 
+    href: "/reports", 
+    icon: BarChart3 
+  },
+  { 
+    name: "Mẫu in", 
+    href: "/template-invoice", 
+    icon: FileText 
+  },
+  { 
+    name: "Thiết lập", 
+    icon: Settings,
+    children: [
+      { name: "Cài đặt chung", href: "/settings/general", icon: Settings },
+      { name: "Tài khoản", href: "/settings/account", icon: Users },
+      { name: "Thanh toán", href: "/settings/payment", icon: Wallet },
+    ]
+  },
 ]
 
 export default navItems
