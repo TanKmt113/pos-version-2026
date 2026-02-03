@@ -4,6 +4,55 @@ Dự án này được xây dựng dựa trên nguyên lý **Clean Architecture*
 
 ---
 
+## 📐 Layout System - Quan trọng!
+
+Dự án đã có sẵn **Layout System hoàn chỉnh** cho Admin Dashboard:
+
+### ✨ Tính năng có sẵn:
+- ✅ **Header** với Search, Notifications, Profile Menu
+- ✅ **Sidebar** với Navigation Menu (collapsible, responsive)
+- ✅ **Footer** với thông tin và social links
+- ✅ **Theme System** (Light/Dark mode tự động)
+- ✅ **Responsive Design** (Mobile/Tablet/Desktop)
+
+### 🚀 Cách sử dụng:
+
+Tất cả pages trong folder `app/(dashboard)/` **TỰ ĐỘNG** có layout!
+
+```tsx
+// src/app/(dashboard)/your-page/page.tsx
+export default function YourPage() {
+  return (
+    <div className="space-y-6">
+      <h1>Trang của bạn</h1>
+      {/* Layout (Header + Sidebar + Footer) tự động render! */}
+    </div>
+  );
+}
+```
+
+### 📝 Tùy chỉnh Menu:
+
+Chỉnh sửa file `src/components/layout/navItems.ts`:
+
+```typescript
+const navItems: NavItem[] = [
+  { name: "Dashboard", href: "/dashboard", icon: Home },
+  { 
+    name: "Bán hàng", 
+    icon: ShoppingCart,
+    children: [
+      { name: "Hóa đơn", href: "/invoice" },
+      { name: "Đổi trả", href: "/return-goods" },
+    ]
+  },
+];
+```
+
+📚 **Xem thêm:** [LAYOUT_GUIDE.md](./LAYOUT_GUIDE.md) - Hướng dẫn chi tiết
+
+---
+
 ## 🏷️ Quy tắc đặt tên (Naming Convention)
 
 Để đảm bảo tính nhất quán trên toàn bộ dự án, các thành viên cần tuân thủ nghiêm ngặt các quy tắc sau:
