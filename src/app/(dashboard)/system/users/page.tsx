@@ -33,7 +33,7 @@ export default function UserPage() {
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <Link href="/users/create">
+          <Link href="/system/users/create">
             <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />
               Thêm người dùng

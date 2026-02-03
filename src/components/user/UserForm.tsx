@@ -76,7 +76,7 @@ export function UserForm({ initialData, mode = 'create', onSubmit }: Props) {
     setLoading(true)
     try {
       await onSubmit(form)
-      router.push('/users')
+      router.push('/system/users')
     } catch (error) {
       console.error('Error submitting form:', error)
     } finally {
@@ -96,7 +96,7 @@ export function UserForm({ initialData, mode = 'create', onSubmit }: Props) {
     <div className="flex flex-col gap-6 p-6">
       {/* Page Header */}
       <div className="flex items-center gap-4">
-        <Link href="/users">
+        <Link href="/system/users">
           <Button variant="ghost" size="icon">
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -238,7 +238,7 @@ export function UserForm({ initialData, mode = 'create', onSubmit }: Props) {
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-3">
-          <Link href="/users">
+          <Link href="/system/users">
             <Button type="button" variant="outline">
               Hủy bỏ
             </Button>

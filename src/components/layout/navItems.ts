@@ -56,6 +56,7 @@ const navItems: NavItem[] = [
     icon: Settings,
     children: [
       { name: "Danh mục hạch toán", href: "/system/accounting-category" },
+      { name: "Danh mục nguời dùng", href: "/system/users" },
       { name: "Vai trò người dùng", href: "/system/user-roles" },
       { name: "Kho hàng/Nhóm kho/Tài khoản", href: "/system/warehouse" },
       { name: "Thiết lập cửa hàng", href: "/system/store-setup" },
