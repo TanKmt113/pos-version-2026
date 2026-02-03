@@ -144,7 +144,7 @@ export function UserTable() {
             <TableHead>Vai trò</TableHead>
             <TableHead>Trạng thái</TableHead>
             <TableHead>Ngày tạo</TableHead>
-            <TableHead className="w-[80px] text-right">Thao tác</TableHead>
+            <TableHead className="w-[100px] text-right">Thao tác</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

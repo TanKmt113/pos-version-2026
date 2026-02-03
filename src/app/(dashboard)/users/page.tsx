@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/Select"
 import { UserTable } from "@/components/user/UserTable"
 import { Download, Plus, Search, Upload } from "lucide-react"
+import Link from "next/link"
 
 export default function UserPage() {
   return (
@@ -32,10 +33,13 @@ export default function UserPage() {
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <Button size="sm">
-            <Plus className="mr-2 h-4 w-4" />
-            Thêm người dùng
-          </Button>
+          <Link href="/users/create">
+            <Button size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Thêm người dùng
+            </Button>
+          </Link>
+
         </div>
       </div>
 
