@@ -4,10 +4,9 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { UnitsForm } from '@/modules/units/components/UnitsForm';
-import { uomService } from '@/modules/units/services/unitsService';
-import { UnitOfMeasures } from '@/modules/units/types';
+import { useUnitById } from '@/modules/units/hooks';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -18,27 +17,14 @@ export interface EditUnitPageProps {
 
 export default function EditUnitPage({ unitId }: EditUnitPageProps) {
   const router = useRouter();
-  const [unit, setUnit] = useState<UnitOfMeasures | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: unit, loading, error } = useUnitById(unitId);
 
   useEffect(() => {
-    const fetchUnit = async () => {
-      try {
-        setLoading(true);
-        const data = await uomService.getById(unitId);
-        setUnit(data);
-      } catch (error: any) {
-        console.error('Failed to fetch unit:', error);
-        const message = error?.error || error?.message || 'Không thể tải dữ liệu đơn vị tính';
-        toast.error(message);
-        router.push('/products/units');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUnit();
-  }, [unitId, router]);
+    if (error) {
+      toast.error(error);
+      router.push('/products/units');
+    }
+  }, [error, router]);
 
   if (loading) {
     return (

@@ -14,12 +14,11 @@ import {
 } from "@/components/ui/DataTableActions";
 import type { DataTableColumn } from "@/shared/types/dataTable";
 import { UnitOfMeasures } from "../types";
-import { uomService } from "../services/unitsService";
-import { PagedResult } from "@/shared/types/api";
 import { Badge } from "@/components/ui/Badge";
 import { DeleteConfirmDialog } from "@/components/ui/DeleteConfirmDialog";
 import { toast } from "sonner";
 import { formatDate } from "@/shared/utils/useFormatDate";
+import { useUnits, useDeleteUnit } from "../hooks";
 
 interface DataListUnitsProps {
   searchTerm?: string;
@@ -31,53 +30,35 @@ export default function DataListUnits({
   statusFilter = "all",
 }: DataListUnitsProps) {
   const router = useRouter();
-  const [data, setData] = useState<PagedResult<UnitOfMeasures> | null>(null);
-  const [loading, setLoading] = useState(true);
   const [selectedRows, setSelectedRows] = useState<UnitOfMeasures[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<UnitOfMeasures | null>(null);
-  const [deleting, setDeleting] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-  const pageSize = 20;
 
   // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-      // Reset về trang 1 khi search
-      if (searchTerm !== debouncedSearchTerm) {
-        setCurrentPage(1);
-      }
-    }, 500); // 500ms delay
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Reset page khi filter thay đổi
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [statusFilter]);
+  // Use hooks for data fetching and delete
+  const { data, loading, error, refetch, setPage, currentPage } = useUnits({
+    pageSize: 20,
+    searchTerm: debouncedSearchTerm,
+    isActive: statusFilter,
+  });
 
-  // Load data
-  const loadData = async (page: number) => {
-    setLoading(true);
-    try {
-      const result = await uomService.getAll(page, pageSize, {
-        searchTerm: debouncedSearchTerm,
-        isActive: statusFilter,
-      });
-      setData(result);
-    } catch (error) {
-      toast.error("Không thể tải dữ liệu");
-    } finally {
-      setLoading(false);
+  const { deleteUnit, loading: deleting } = useDeleteUnit();
+
+  // Show error toast if any
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
     }
-  };
-
-  useEffect(() => {
-    loadData(currentPage);
-  }, [currentPage, debouncedSearchTerm, statusFilter]);
+  }, [error]);
 
   // Column definitions
   const columns: DataTableColumn<UnitOfMeasures>[] = [
@@ -134,26 +115,13 @@ export default function DataListUnits({
   const confirmDelete = async () => {
     if (!itemToDelete) return;
 
-    setDeleting(true);
-    try {
-      await uomService.delete(itemToDelete.id);
+    const success = await deleteUnit(itemToDelete.id);
+    if (success) {
       toast.success(`Đã xóa "${itemToDelete.uomName}" thành công`);
       setDeleteDialogOpen(false);
       setItemToDelete(null);
-      loadData(currentPage);
+      refetch();
       router.refresh();
-    } catch (error: any) {
-      let errorMessage = "Không thể xóa đơn vị tính";
-      if (error?.error) {
-        errorMessage = error.error;
-      } else if (error?.message) {
-        errorMessage = error.message;
-      } else if (typeof error === "string") {
-        errorMessage = error;
-      }
-      toast.error(errorMessage);
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -189,7 +157,7 @@ export default function DataListUnits({
                 totalPages: data.totalPages,
                 hasNextPage: data.hasNextPage,
                 hasPreviousPage: data.hasPreviousPage,
-                onPageChange: setCurrentPage,
+                onPageChange: setPage,
               }
             : undefined
         }
