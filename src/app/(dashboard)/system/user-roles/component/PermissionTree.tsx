@@ -24,7 +24,7 @@ const PermissionNode: React.FC<PermissionNodeProps> = ({
   selectedIds,
   onToggle,
 }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const hasChildren = node.functions && node.functions.length > 0;
 
   const descendantIds = React.useMemo(() => getDescendantIds(node), [node]);
