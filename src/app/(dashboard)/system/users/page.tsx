@@ -9,11 +9,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select"
+import { TablePagination } from "@/components/ui/TablePagination"
 import { UserTable } from "@/components/user/UserTable"
 import { Download, Plus, Search, Upload } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
 
 export default function UserPage() {
+  const [currentPage, setCurrentPage] = useState(1)
+  const totalItems = 200
+  const itemsPerPage = 10
+
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Page Header */}
@@ -39,7 +45,6 @@ export default function UserPage() {
               Thêm người dùng
             </Button>
           </Link>
-
         </div>
       </div>
 
@@ -82,24 +87,15 @@ export default function UserPage() {
       {/* Table */}
       <UserTable />
 
-      {/* Pagination Info */}
-      <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-        <p className="text-sm text-muted-foreground">
-          Hiển thị <span className="font-medium">1-8</span> trong tổng số{" "}
-          <span className="font-medium">8</span> người dùng
-        </p>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled>
-            Trước
-          </Button>
-          <Button variant="outline" size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-            1
-          </Button>
-          <Button variant="outline" size="sm" disabled>
-            Sau
-          </Button>
-        </div>
-      </div>
+      {/* Pagination */}
+      <TablePagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(totalItems / itemsPerPage)}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        itemName="người dùng"
+      />
     </div>
   )
 }
