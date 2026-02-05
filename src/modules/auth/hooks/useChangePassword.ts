@@ -1,49 +1,41 @@
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { authService } from '../services/authService';
-import { ILoginRequest, ILoginResponse } from '../types';
 import { toast } from 'sonner';
 import { getErrorMessage, getAllErrorMessages } from '@/infrastructure/api-clients/apiHelpers';
 import { ApiError } from '@/infrastructure/api-clients/httpClient';
 
-interface UseLoginReturn {
-  login: (data: ILoginRequest) => Promise<ILoginResponse | null>;
+interface UseChangePasswordReturn {
+  changePassword: (oldPassword: string, newPassword: string) => Promise<boolean>;
   isLoading: boolean;
   error: string | null;
 }
 
 /**
- * Hook để xử lý đăng nhập
+ * Hook để đổi mật khẩu
  */
-export const useLogin = (): UseLoginReturn => {
+export const useChangePassword = (): UseChangePasswordReturn => {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
-  const login = async (data: ILoginRequest): Promise<ILoginResponse | null> => {
+  const changePassword = async (
+    oldPassword: string,
+    newPassword: string
+  ): Promise<boolean> => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await authService.login(data);
-      
-      // Hiển thị thông báo thành công
-      toast.success(`Chào mừng ${response.user.fullName}!`);
-      
-      // Redirect to dashboard
-      router.push('/dashboard');
-      
-      return response;
+      await authService.changePassword(oldPassword, newPassword);
+      toast.success('Đổi mật khẩu thành công');
+      return true;
     } catch (err) {
-      // Lấy error message
       const errorMessage = getErrorMessage(err);
       setError(errorMessage);
 
       // Hiển thị error toast
       if (err instanceof ApiError) {
-        // Hiển thị main error
         toast.error(err.error);
-
+        
         // Hiển thị validation errors nếu có
         if (err.errors && err.errors.length > 0) {
           err.errors.forEach(errMsg => {
@@ -54,11 +46,11 @@ export const useLogin = (): UseLoginReturn => {
         toast.error(errorMessage);
       }
 
-      return null;
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  return { login, isLoading, error };
+  return { changePassword, isLoading, error };
 };

@@ -8,3 +8,20 @@ export interface UnitOfMeasures {
   updateDate: string | null;
   updator: string | null;
 }
+
+/**
+ * DTO cho tạo mới đơn vị tính
+ */
+export interface CreateUnitOfMeasureDto {
+  uomCode: string;
+  uomName: string;
+  isActive: boolean;
+}
+
+/**
+ * DTO cho cập nhật đơn vị tính
+ */
+export interface UpdateUnitOfMeasureDto {
+  uomName: string;
+  isActive: boolean;
+}
