@@ -6,19 +6,60 @@ import { BaseService } from '@/shared/base/baseService';
 import { UnitOfMeasures, CreateUnitOfMeasureDto, UpdateUnitOfMeasureDto } from '../types';
 import { ApiError } from '@/infrastructure/api-clients/httpClient';
 import { PagedResult } from '@/shared/types/api';
+import { QueryOptionsBuilder } from '@/shared/utils/queryOptionsBuilder';
 
 class UomService extends BaseService {
   private readonly baseUrl = '/UnitOfMeasures';
 
   /**
-   * Lấy danh sách đơn vị tính với phân trang
+   * Lấy danh sách đơn vị tính với phân trang và filter
    */
-  async getAll(pageIndex: number = 1, pageSize: number = 20): Promise<PagedResult<UnitOfMeasures>> {
+  async getAll(
+    pageIndex: number = 1,
+    pageSize: number = 20,
+    filters?: {
+      searchTerm?: string;
+      isActive?: boolean | string;
+    }
+  ): Promise<PagedResult<UnitOfMeasures>> {
     try {
-      const response = await this.http.get<PagedResult<UnitOfMeasures>>(
-        `${this.baseUrl}?pageIndex=${pageIndex}&pageSize=${pageSize}`
-      );
-      return response.data; // Trả về full PagedResult với items + thông tin phân trang
+      const queryBuilder = QueryOptionsBuilder.create()
+        .paginate(pageIndex, pageSize)
+        .orderBy('createdAt', 'desc');
+
+      // Apply filters
+      if (filters) {
+        queryBuilder.filter(f => {
+          let filterBuilder = f;
+          let hasCondition = false;
+
+          // Search filter (tìm kiếm theo mã hoặc tên)
+          if (filters.searchTerm && filters.searchTerm.trim()) {
+            filterBuilder = filterBuilder
+              .group(g => 
+                g.contains('uomCode', filters.searchTerm!)
+                  .or()
+                  .contains('uomName', filters.searchTerm!)
+              );
+            hasCondition = true;
+          }
+
+          // Status filter
+          if (filters.isActive !== undefined && filters.isActive !== 'all') {
+            if (hasCondition) filterBuilder = filterBuilder.and();
+            const isActiveValue = filters.isActive === 'active' || filters.isActive === true;
+            filterBuilder = filterBuilder.equals('isActive', isActiveValue);
+          }
+
+          return filterBuilder;
+        });
+      }
+
+      const queryString = queryBuilder.buildQueryString();
+      const url = queryString ? `${this.baseUrl}?${queryString}` : this.baseUrl;
+      
+      const response = await this.http.get<PagedResult<UnitOfMeasures>>(url);
+      return response.data;
     } catch (error) {
       if (this.isApiError(error)) {
         if (error.status >= 500) {
@@ -155,6 +196,8 @@ class UomService extends BaseService {
       await this.http.delete(`${this.baseUrl}/${id}`);
       this.logActivity(`Đã xóa đơn vị tính: ${id}`);
     } catch (error) {
+      console.error('Delete error details:', error);
+      
       if (this.isApiError(error)) {
         if (error.status === 404) {
           throw new ApiError(
@@ -164,15 +207,16 @@ class UomService extends BaseService {
             'NOT_FOUND'
           );
         }
-        if (error.status === 409) {
+        if (error.status === 409 || error.status === 400) {
           throw new ApiError(
-            409,
+            error.status,
             'Không thể xóa đơn vị tính đang được sử dụng.',
             error.errors,
             'CONFLICT_ERROR'
           );
         }
       }
+      
       this.logError(error, 'UomService.delete');
       throw error;
     }

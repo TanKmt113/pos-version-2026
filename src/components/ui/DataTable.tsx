@@ -72,7 +72,7 @@ export function DataTable<T>({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Table */}
-      <div className="rounded-md border">
+      <div className={`rounded-md border transition-opacity duration-200 ${loading ? 'opacity-60' : 'opacity-100'}`}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -102,17 +102,26 @@ export function DataTable<T>({
           </TableHeader>
           <TableBody>
             {loading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length + (selectable ? 1 : 0) + (renderActions ? 1 : 0)}
-                  className="text-center py-8"
-                >
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-                    <span className="ml-2">Đang tải...</span>
-                  </div>
-                </TableCell>
-              </TableRow>
+              // Skeleton loading state
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  {selectable && (
+                    <TableCell>
+                      <div className="h-4 w-4 bg-muted animate-pulse rounded" />
+                    </TableCell>
+                  )}
+                  {columns.map((column) => (
+                    <TableCell key={column.key}>
+                      <div className="h-4 bg-muted animate-pulse rounded" />
+                    </TableCell>
+                  ))}
+                  {renderActions && (
+                    <TableCell>
+                      <div className="h-8 w-8 bg-muted animate-pulse rounded ml-auto" />
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
             ) : data.length === 0 ? (
               <TableRow>
                 <TableCell

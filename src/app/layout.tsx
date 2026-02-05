@@ -1,6 +1,7 @@
 import "@/app/globals.css";
 import { Layout } from "@/components/layout";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { Toaster } from "@/components/ui/Sonner";
 import { Inter } from "next/font/google";
 import { Metadata } from "next";
 import { ReactNode } from "react";
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="vi" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider>{children}</ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

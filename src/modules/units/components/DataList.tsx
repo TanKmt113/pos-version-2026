@@ -3,41 +3,73 @@
  * Ví dụ sử dụng Generic DataTable cho Units
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { DataTable } from '@/components/ui/DataTable';
-import { DataTableActions, createDefaultActions } from '@/components/ui/DataTableActions';
-import type { DataTableColumn } from '@/shared/types/dataTable';
-import { UnitOfMeasures } from '../types';
-import { uomService } from '../services/unitsService';
-import { PagedResult } from '@/shared/types/api';
-import { Badge } from '@/components/ui/Badge';
-import { toast } from 'sonner';
-import { useMemo } from 'react';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { DataTable } from "@/components/ui/DataTable";
+import {
+  DataTableActions,
+  createDefaultActions,
+} from "@/components/ui/DataTableActions";
+import type { DataTableColumn } from "@/shared/types/dataTable";
+import { UnitOfMeasures } from "../types";
+import { uomService } from "../services/unitsService";
+import { PagedResult } from "@/shared/types/api";
+import { Badge } from "@/components/ui/Badge";
+import { DeleteConfirmDialog } from "@/components/ui/DeleteConfirmDialog";
+import { toast } from "sonner";
+import { formatDate } from "@/shared/utils/useFormatDate";
 
 interface DataListUnitsProps {
   searchTerm?: string;
   statusFilter?: string;
 }
 
-export default function DataListUnits({ searchTerm = '', statusFilter = 'all' }: DataListUnitsProps) {
+export default function DataListUnits({
+  searchTerm = "",
+  statusFilter = "all",
+}: DataListUnitsProps) {
   const router = useRouter();
   const [data, setData] = useState<PagedResult<UnitOfMeasures> | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedRows, setSelectedRows] = useState<UnitOfMeasures[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<UnitOfMeasures | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const pageSize = 20;
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      // Reset về trang 1 khi search
+      if (searchTerm !== debouncedSearchTerm) {
+        setCurrentPage(1);
+      }
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Reset page khi filter thay đổi
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter]);
 
   // Load data
   const loadData = async (page: number) => {
     setLoading(true);
     try {
-      const result = await uomService.getAll(page, pageSize);
+      const result = await uomService.getAll(page, pageSize, {
+        searchTerm: debouncedSearchTerm,
+        isActive: statusFilter,
+      });
       setData(result);
     } catch (error) {
-      toast.error('Không thể tải dữ liệu');
+      toast.error("Không thể tải dữ liệu");
     } finally {
       setLoading(false);
     }
@@ -45,63 +77,45 @@ export default function DataListUnits({ searchTerm = '', statusFilter = 'all' }:
 
   useEffect(() => {
     loadData(currentPage);
-  }, [currentPage]);
-
-  // Apply filters
-  const filteredData = useMemo(() => {
-    if (!data?.items) return [];
-    
-    return data.items.filter((unit) => {
-      const matchSearch =
-        unit.uomCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        unit.uomName.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchStatus =
-        statusFilter === 'all' ||
-        (statusFilter === 'active' && unit.isActive) ||
-        (statusFilter === 'inactive' && !unit.isActive);
-      
-      return matchSearch && matchStatus;
-    });
-  }, [data?.items, searchTerm, statusFilter]);
+  }, [currentPage, debouncedSearchTerm, statusFilter]);
 
   // Column definitions
   const columns: DataTableColumn<UnitOfMeasures>[] = [
     {
-      key: 'uomCode',
-      header: 'Mã đơn vị',
-      width: 'w-[150px]',
+      key: "uomCode",
+      header: "Mã đơn vị",
+      width: "w-[150px]",
       accessor: (row) => row.uomCode,
     },
     {
-      key: 'uomName',
-      header: 'Tên đơn vị',
+      key: "uomName",
+      header: "Tên đơn vị",
       accessor: (row) => row.uomName,
     },
     {
-      key: 'isActive',
-      header: 'Trạng thái',
-      width: 'w-[120px]',
+      key: "isActive",
+      header: "Trạng thái",
+      width: "w-[120px]",
       render: (row) => (
-        <Badge variant={row.isActive ? 'success' : 'secondary'}>
-          {row.isActive ? 'Hoạt động' : 'Không hoạt động'}
+        <Badge variant={row.isActive ? "success" : "secondary"}>
+          {row.isActive ? "Hoạt động" : "Không hoạt động"}
         </Badge>
       ),
     },
     {
-      key: 'createdAt',
-      header: 'Ngày tạo',
-      width: 'w-[150px]',
+      key: "createdAt",
+      header: "Ngày tạo",
+      width: "w-[150px]",
       render: (row) => (
         <span className="text-muted-foreground">
-          {new Date(row.createdAt).toLocaleDateString('vi-VN')}
+          {formatDate(row.createdAt)}
         </span>
       ),
     },
     {
-      key: 'creator',
-      header: 'Người tạo',
-      width: 'w-[150px]',
+      key: "creator",
+      header: "Người tạo",
+      width: "w-[150px]",
       accessor: (row) => row.creator,
     },
   ];
@@ -112,16 +126,34 @@ export default function DataListUnits({ searchTerm = '', statusFilter = 'all' }:
   };
 
   // Handle delete
-  const handleDelete = async (row: UnitOfMeasures) => {
-    if (confirm('Bạn có chắc chắn muốn xóa?')) {
-      try {
-        await uomService.delete(row.id);
-        toast.success('Xóa thành công');
-        loadData(currentPage);
-        router.refresh();
-      } catch (error) {
-        toast.error('Không thể xóa');
+  const handleDelete = (row: UnitOfMeasures) => {
+    setItemToDelete(row);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+
+    setDeleting(true);
+    try {
+      await uomService.delete(itemToDelete.id);
+      toast.success(`Đã xóa "${itemToDelete.uomName}" thành công`);
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
+      loadData(currentPage);
+      router.refresh();
+    } catch (error: any) {
+      let errorMessage = "Không thể xóa đơn vị tính";
+      if (error?.error) {
+        errorMessage = error.error;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
       }
+      toast.error(errorMessage);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -137,30 +169,42 @@ export default function DataListUnits({ searchTerm = '', statusFilter = 'all' }:
   );
 
   return (
-    <DataTable
-      data={filteredData}
-      columns={columns}
-      loading={loading}
-      emptyMessage="Không có đơn vị tính nào"
-      selectable
-      selectedRows={selectedRows}
-      onSelectionChange={setSelectedRows}
-      getRowKey={(row) => row.id}
-      renderActions={renderActions}
-      pagination={
-        data
-          ? {
-              pageIndex: data.pageIndex,
-              pageSize: data.pageSize,
-              totalCount: data.totalCount,
-              totalPages: data.totalPages,
-              hasNextPage: data.hasNextPage,
-              hasPreviousPage: data.hasPreviousPage,
-              onPageChange: setCurrentPage,
-            }
-          : undefined
-      }
-      onRowClick={(row) => console.log('Row clicked:', row)}
-    />
+    <>
+      <DataTable
+        data={data?.items || []}
+        columns={columns}
+        loading={loading}
+        emptyMessage="Không có đơn vị tính nào"
+        selectable
+        selectedRows={selectedRows}
+        onSelectionChange={setSelectedRows}
+        getRowKey={(row) => row.id}
+        renderActions={renderActions}
+        pagination={
+          data
+            ? {
+                pageIndex: data.pageIndex,
+                pageSize: data.pageSize,
+                totalCount: data.totalCount,
+                totalPages: data.totalPages,
+                hasNextPage: data.hasNextPage,
+                hasPreviousPage: data.hasPreviousPage,
+                onPageChange: setCurrentPage,
+              }
+            : undefined
+        }
+        onRowClick={(row) => console.log("Row clicked:", row)}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        itemName={itemToDelete?.uomName || ""}
+        entityType="đơn vị tính"
+        onConfirm={confirmDelete}
+        isDeleting={deleting}
+      />
+    </>
   );
 }

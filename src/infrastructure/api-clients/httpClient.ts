@@ -120,12 +120,35 @@ httpClient.interceptors.response.use(
         }
 
         // Fallback cho các lỗi không theo chuẩn ApiResponse
+        // Try to extract error message from various response formats
+        let errorMessage = error.message || 'Đã có lỗi xảy ra ngoài dự kiến';
+        
+        // Check if response has data with message
+        if (error.response?.data) {
+            const data = error.response.data as any;
+            if (typeof data === 'string') {
+                errorMessage = data;
+            } else if (data.message) {
+                errorMessage = data.message;
+            } else if (data.title) {
+                errorMessage = data.title;
+            } else if (data.detail) {
+                errorMessage = data.detail;
+            }
+        }
+        
         const fallbackError = new ApiError(
             status,
-            error.message || 'Đã có lỗi xảy ra ngoài dự kiến',
+            errorMessage,
             null,
             'UNKNOWN_ERROR'
         );
+
+        console.error('Fallback error created:', {
+            status,
+            message: errorMessage,
+            originalError: error.response?.data
+        });
 
         return Promise.reject(fallbackError);
     }

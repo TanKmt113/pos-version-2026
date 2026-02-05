@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { UnitOfMeasures } from '../types';
 import { uomService } from '../services/unitsService';
 import { toast } from 'sonner';
+import { formatDateTime } from '@/shared/utils/useFormatDate';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 import Link from 'next/link';
 
@@ -212,7 +213,7 @@ export function UnitsForm({ initialData, mode }: UnitsFormProps) {
                 <div>
                   <p className="text-muted-foreground">Ngày tạo</p>
                   <p className="font-medium">
-                    {new Date(initialData.createdAt).toLocaleString('vi-VN')}
+                    {formatDateTime(initialData.createdAt)}
                   </p>
                 </div>
                 {initialData.updator && (
@@ -224,7 +225,7 @@ export function UnitsForm({ initialData, mode }: UnitsFormProps) {
                     <div>
                       <p className="text-muted-foreground">Ngày cập nhật</p>
                       <p className="font-medium">
-                        {new Date(initialData.updateDate!).toLocaleString('vi-VN')}
+                        {formatDateTime(initialData.updateDate!)}
                       </p>
                     </div>
                   </>
