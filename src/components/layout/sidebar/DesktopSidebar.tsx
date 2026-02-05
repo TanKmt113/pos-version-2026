@@ -66,7 +66,7 @@ export function DesktopSidebar({
                   const hasChildren = 'children' in item && item.children && item.children.length > 0;
                   const itemHref = 'href' in item ? item.href : undefined;
                   const active = itemHref ? isActive(itemHref) : false;
-                  
+
                   // If item has children, show as Popover
                   if (hasChildren) {
                     return (
@@ -88,8 +88,8 @@ export function DesktopSidebar({
                             {item.name}
                           </TooltipContent>
                         </Tooltip>
-                        <PopoverContent 
-                          side={direction === "rtl" ? "left" : "right"} 
+                        <PopoverContent
+                          side={direction === "rtl" ? "left" : "right"}
                           align="start"
                           className="w-56 p-2"
                         >
@@ -101,8 +101,8 @@ export function DesktopSidebar({
                                 href={child.href}
                                 className={cn(
                                   "block rounded-md px-2 py-1.5 text-sm hover:bg-accent",
-                                  isActive(child.href) 
-                                    ? "bg-primary/10 text-primary font-medium" 
+                                  isActive(child.href)
+                                    ? "bg-primary/10 text-primary font-medium"
                                     : "text-muted-foreground"
                                 )}
                               >
@@ -114,7 +114,7 @@ export function DesktopSidebar({
                       </Popover>
                     );
                   }
-                  
+
                   // Regular item with href
                   return (
                     <Tooltip key={item.name} delayDuration={0}>
@@ -179,7 +179,7 @@ export function DesktopSidebar({
               </TooltipContent>
             </Tooltip>
           ) : (
-            <UserProfile isCollapsed={isCollapsed} />
+            <UserProfile mobile isCollapsed={isCollapsed} />
           )}
         </div>
       </div>

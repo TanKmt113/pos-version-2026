@@ -1,9 +1,9 @@
-import { 
-  Home, 
-  Wallet, 
-  PieChart, 
-  Receipt, 
-  Settings, 
+import {
+  Home,
+  Wallet,
+  PieChart,
+  Receipt,
+  Settings,
   ShoppingCart,
   Package,
   Users,
@@ -25,7 +25,7 @@ import {
   Ticket,
   BookOpen,
   CreditCard,
-  type LucideIcon 
+  type LucideIcon
 } from "lucide-react"
 
 // Type cho menu item con
@@ -46,16 +46,17 @@ type NavItem = {
 )
 
 const navItems: NavItem[] = [
-  { 
-    name: "Dashboard", 
-    href: "/dashboard", 
-    icon: Home 
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: Home
   },
-  { 
-    name: "Thiết lập hệ thống", 
+  {
+    name: "Thiết lập hệ thống",
     icon: Settings,
     children: [
       { name: "Danh mục hạch toán", href: "/system/accounting-category" },
+      { name: "Danh mục nguời dùng", href: "/system/users" },
       { name: "Vai trò người dùng", href: "/system/user-roles" },
       { name: "Kho hàng/Nhóm kho/Tài khoản", href: "/system/warehouse" },
       { name: "Thiết lập cửa hàng", href: "/system/store-setup" },
@@ -65,8 +66,8 @@ const navItems: NavItem[] = [
       { name: "Thiết lập chương hệ thống", href: "/system/system-config" },
     ]
   },
-  { 
-    name: "Quản lý hàng hóa", 
+  {
+    name: "Quản lý hàng hóa",
     icon: Package,
     children: [
       { name: "Danh mục hàng hóa", href: "/products/list" },
@@ -74,8 +75,8 @@ const navItems: NavItem[] = [
       { name: "Đơn vị tính", href: "/products/units" },
     ]
   },
-  { 
-    name: "Quản lý khách hàng", 
+  {
+    name: "Quản lý khách hàng",
     icon: Users,
     children: [
       { name: "Danh sách khách hàng", href: "/customer" },
@@ -84,8 +85,8 @@ const navItems: NavItem[] = [
       { name: "Danh sách hóa đơn", href: "/customer/invoices" },
     ]
   },
-  { 
-    name: "Quản lý nhà cung cấp", 
+  {
+    name: "Quản lý nhà cung cấp",
     icon: Truck,
     children: [
       { name: "Danh sách nhà cung cấp", href: "/supplier/list" },
@@ -95,8 +96,8 @@ const navItems: NavItem[] = [
       { name: "Trả hàng", href: "/supplier/returns" },
     ]
   },
-  { 
-    name: "Quản lý gói nguyên liệu", 
+  {
+    name: "Quản lý gói nguyên liệu",
     icon: PackageOpen,
     children: [
       { name: "Danh sách gói nguyên liệu", href: "/materials/packages" },
@@ -105,8 +106,8 @@ const navItems: NavItem[] = [
       { name: "Báo cáo chi phí sản xuất", href: "/materials/production-cost-report" },
     ]
   },
-  { 
-    name: "Quy tắc giá", 
+  {
+    name: "Quy tắc giá",
     icon: DollarSign,
     children: [
       { name: "Danh sách giá mua, đơn", href: "/pricing/purchase-list" },
@@ -116,8 +117,8 @@ const navItems: NavItem[] = [
       { name: "Voucher/Coupon", href: "/pricing/vouchers" },
     ]
   },
-  { 
-    name: "Sổ quỹ", 
+  {
+    name: "Sổ quỹ",
     icon: BookOpen,
     children: [
       { name: "Danh mục phiếu thu/chi", href: "/cashbook/categories" },
@@ -125,15 +126,15 @@ const navItems: NavItem[] = [
       { name: "Báo cáo tồn quỹ", href: "/cashbook/balance-report" },
     ]
   },
-  { 
-    name: "Báo cáo", 
-    href: "/reports", 
-    icon: BarChart3 
+  {
+    name: "Báo cáo",
+    href: "/reports",
+    icon: BarChart3
   },
-  { 
-    name: "Mẫu in", 
-    href: "/template-invoice", 
-    icon: FileText 
+  {
+    name: "Mẫu in",
+    href: "/template-invoice",
+    icon: FileText
   },
 ]
 
