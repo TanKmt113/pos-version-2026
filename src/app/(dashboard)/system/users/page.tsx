@@ -9,8 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select"
-import { TablePagination } from "@/components/ui/TablePagination"
+// import { TablePagination } from "@/shared/ui/TablePagination"
 import { UserTable } from "@/components/user/UserTable"
+import { TablePagination } from "@/shared/ui/TablePagination"
 import { Download, Plus, Search, Upload } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
