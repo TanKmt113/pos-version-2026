@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/Label';
 import { Switch } from '@/components/ui/Switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { UnitOfMeasures } from '../types';
-import { uomService } from '../services/unitsService';
+import { useCreateUnit, useUpdateUnit } from '../hooks';
 import { toast } from 'sonner';
 import { formatDateTime } from '@/shared/utils/useFormatDate';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
@@ -28,7 +28,11 @@ export interface UnitsFormProps {
 
 export function UnitsForm({ initialData, mode }: UnitsFormProps) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const { create, loading: creating } = useCreateUnit();
+  const { update, loading: updating } = useUpdateUnit();
+  
+  const loading = creating || updating;
+  
   const [formData, setFormData] = useState({
     uomCode: initialData?.uomCode || '',
     uomName: initialData?.uomName || '',
@@ -48,25 +52,26 @@ export function UnitsForm({ initialData, mode }: UnitsFormProps) {
       return;
     }
 
-    setLoading(true);
-    try {
-      if (mode === 'create') {
-        await uomService.create(formData);
+    let result = null;
+    if (mode === 'create') {
+      result = await create(formData);
+      if (result) {
         toast.success('Thêm đơn vị tính thành công');
-      } else {
-        // Only send fields that can be updated
-        await uomService.update(initialData!.id, {
-          uomName: formData.uomName,
-          isActive: formData.isActive,
-        });
+      }
+    } else {
+      // Only send fields that can be updated
+      result = await update(initialData!.id, {
+        uomName: formData.uomName,
+        isActive: formData.isActive,
+      });
+      if (result) {
         toast.success('Cập nhật đơn vị tính thành công');
       }
+    }
+
+    if (result) {
       router.push('/products/units');
       router.refresh();
-    } catch (error: any) {
-      toast.error(error.message || 'Có lỗi xảy ra');
-    } finally {
-      setLoading(false);
     }
   };
 
