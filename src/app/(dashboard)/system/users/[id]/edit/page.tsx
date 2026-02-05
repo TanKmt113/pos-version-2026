@@ -13,7 +13,7 @@ export default function CreateUserPage() {
 
   return (
     <UserForm
-      mode="create"
+      mode="edit"
       onSubmit={handleCreateUser}
     />
   )
