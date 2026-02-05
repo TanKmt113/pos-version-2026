@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/Select"
 import { Textarea } from "@/components/ui/Textarea"
-import { User } from "@/modules/user/user.types"
+import { User } from "@/modules/user/types"
 import { ArrowLeft, Loader2, Save } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"

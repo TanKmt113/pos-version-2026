@@ -1,7 +1,7 @@
 'use client'
 
 import { BranchForm } from "@/components/branch/BranchForm"
-import { User } from "@/modules/user/user.types"
+import { User } from "@/modules/user/types"
 
 export default function CreateBranchPage() {
   async function handleCreateBranch(data: Partial<User>) {

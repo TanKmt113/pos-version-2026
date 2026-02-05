@@ -1,7 +1,7 @@
 'use client'
 
 import { UserForm } from "@/components/user/UserForm"
-import { User } from "@/modules/user/user.types"
+import { User } from "@/modules/user/types"
 
 export default function CreateUserPage() {
   async function handleCreateUser(data: Partial<User>) {
