@@ -27,17 +27,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/Table"
-import { uomService } from "@/modules/units/services/unitsService"
-import { UnitOfMeasures } from "@/modules/units/types"
+import { useUom } from "@/modules/units/hooks/useUom"
 import { TablePagination } from "@/shared/ui/TablePagination"
 import { Download, Edit, Loader2, MoreHorizontal, Plus, Search, Trash2, Upload } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
 export default function UnitOfMeasuresPage() {
-  const [units, setUnits] = useState<UnitOfMeasures[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { getAll, data: units, isLoading } = useUom()
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
@@ -45,18 +42,7 @@ export default function UnitOfMeasuresPage() {
 
   // Fetch data từ API
   useEffect(() => {
-    async function fetchUnits() {
-      try {
-        setLoading(true)
-        const data = await uomService.getAll()
-        setUnits(data)
-      } catch (err: any) {
-        setError(err.message || 'Có lỗi xảy ra khi tải dữ liệu')
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchUnits()
+    getAll()
   }, [])
 
   // Filter data
@@ -154,19 +140,13 @@ export default function UnitOfMeasuresPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading ? (
+            {isLoading ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
                   <div className="flex items-center justify-center gap-2">
                     <Loader2 className="h-5 w-5 animate-spin" />
                     <span>Đang tải dữ liệu...</span>
                   </div>
-                </TableCell>
-              </TableRow>
-            ) : error ? (
-              <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center text-destructive">
-                  {error}
                 </TableCell>
               </TableRow>
             ) : paginatedUnits.length === 0 ? (
@@ -227,7 +207,7 @@ export default function UnitOfMeasuresPage() {
       </div>
 
       {/* Pagination */}
-      {!loading && !error && (
+      {!isLoading && (
         <TablePagination
           currentPage={currentPage}
           totalPages={totalPages}
