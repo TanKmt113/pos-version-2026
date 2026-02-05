@@ -1,10 +1,10 @@
 'use client'
 
-import { UserForm } from "@/components/user/UserForm"
+import { BranchForm } from "@/components/branch/BranchForm"
 import { User } from "@/modules/user/types"
 
 export default function CreateUserPage() {
-  async function handleCreateUser(data: Partial<User>) {
+  async function handleCreateBranch(data: Partial<User>) {
     // TODO: Implement API call to create user
     console.log('Creating user:', data)
     // Simulate API delay
@@ -12,9 +12,9 @@ export default function CreateUserPage() {
   }
 
   return (
-    <UserForm
+    <BranchForm
       mode="create"
-      onSubmit={handleCreateUser}
+      onSubmit={handleCreateBranch}
     />
   )
 }
