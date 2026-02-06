@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Plus } from "lucide-react";
 import { Checkbox } from "@/components/ui/Checkbox";
-import ProductsList from "./component";
+import ProductsList from "../../../../modules/items/components";
 
 import {
   Dialog,
