@@ -1,117 +1,91 @@
-"use client";
+'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Separator } from "@/components/ui/Separator";
-import { Save, Store, MapPin, Phone, Mail, Globe } from "lucide-react";
+import { BranchTable } from "@/components/branch/BranchTable"
+import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/Input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select"
+import { Download, Plus, Search, Upload } from "lucide-react"
+import Link from "next/link"
 
 export default function StoreSetupPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="flex flex-col gap-6 p-6">
+      {/* Page Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Thiết lập cửa hàng</h1>
-          <p className="text-muted-foreground mt-1">Cấu hình thông tin cửa hàng của bạn</p>
+          <h1 className="text-2xl font-bold tracking-tight">Quản lý chi nhánh</h1>
+          <p className="text-muted-foreground">
+            Quản lý danh sách cửa hàng, chi nhánh trong hệ thống
+          </p>
         </div>
-        <Button className="gap-2">
-          <Save className="h-4 w-4" />
-          Lưu thay đổi
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm">
+            <Upload className="mr-2 h-4 w-4" />
+            Import
+          </Button>
+          <Button variant="outline" size="sm">
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+          <Link href="/system/store-setup/create">
+            <Button size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Thêm chi nhánh
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Thông tin cửa hàng</CardTitle>
-            <CardDescription>Cập nhật thông tin chính của cửa hàng</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="storeName">Tên cửa hàng *</Label>
-                <Input id="storeName" placeholder="VD: POS Store" defaultValue="POS Store" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="storeCode">Mã cửa hàng</Label>
-                <Input id="storeCode" placeholder="STORE-01" defaultValue="STORE-01" />
-              </div>
-            </div>
+      {/* Filters */}
+      <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 sm:flex-row sm:items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Tìm kiếm theo mã, tên chi nhánh, địa chỉ..."
+            className="pl-9"
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Select defaultValue="all">
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Trạng thái" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả trạng thái</SelectItem>
+              <SelectItem value="active">Hoạt động</SelectItem>
+              <SelectItem value="inactive">Ngừng hoạt động</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-            <Separator />
+      {/* Table */}
+      <BranchTable />
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="address" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Địa chỉ
-                </Label>
-                <Input id="address" placeholder="Nhập địa chỉ cửa hàng" defaultValue="123 Đường ABC, Quận 1, TP.HCM" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
-                    Số điện thoại
-                  </Label>
-                  <Input id="phone" placeholder="0901234567" defaultValue="0901234567" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    Email
-                  </Label>
-                  <Input id="email" type="email" placeholder="store@example.com" defaultValue="store@pos.com" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="website" className="flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  Website
-                </Label>
-                <Input id="website" placeholder="https://yourstore.com" />
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="taxCode">Mã số thuế</Label>
-                <Input id="taxCode" placeholder="0123456789" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="businessType">Loại hình kinh doanh</Label>
-                <select className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm">
-                  <option>Bán lẻ</option>
-                  <option>Bán sỉ</option>
-                  <option>Cả hai</option>
-                </select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Logo cửa hàng</CardTitle>
-            <CardDescription>Tải lên logo của bạn</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="border-2 border-dashed rounded-lg p-8 text-center">
-              <Store className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-              <p className="text-sm text-muted-foreground mb-4">Kéo thả hoặc click để tải ảnh</p>
-              <Button variant="outline" size="sm">Chọn file</Button>
-            </div>
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>• Định dạng: JPG, PNG</p>
-              <p>• Kích thước tối đa: 2MB</p>
-              <p>• Khuyến nghị: 500x500px</p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Pagination Info */}
+      <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+        <p className="text-sm text-muted-foreground">
+          Hiển thị <span className="font-medium">1-5</span> trong tổng số{" "}
+          <span className="font-medium">5</span> chi nhánh
+        </p>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" disabled>
+            Trước
+          </Button>
+          <Button variant="outline" size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+            1
+          </Button>
+          <Button variant="outline" size="sm" disabled>
+            Sau
+          </Button>
+        </div>
       </div>
     </div>
-  );
+  )
 }

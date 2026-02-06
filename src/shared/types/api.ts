@@ -9,3 +9,17 @@ export interface IApiResponse<T> {
     limit: number;
   };
 }
+
+/**
+ * Cấu trúc Paged Result từ API
+ * Dùng cho các endpoint có phân trang
+ */
+export interface PagedResult<T> {
+  items: T[];
+  pageIndex: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
