@@ -4,8 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Plus } from "lucide-react";
-import { Checkbox } from "@/components/ui/Checkbox";
-import ProductsList from "../../../../modules/items/components";
+import { Checkbox } from "@/components/ui/Checkbox"; 
 
 import {
   Dialog,
@@ -16,20 +15,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/Dialog";
-import { Label } from "@/components/ui/Label";
-import { IProduct } from "@/modules/items/types";
-import { useItems } from "@/modules/items/hooks/useItems";
-const DUMMY_PRODUCTS: IProduct[] = [];
+import { Label } from "@/components/ui/Label"; 
 
 export default function ProductPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
-
-  // const { getItems, isLoading } = useItems();
-
-  // getItems({ $top: 10 })
-  
+ 
   const [selectedColumns, setSelectedColumns] = useState<
     Record<string, boolean>
   >({
