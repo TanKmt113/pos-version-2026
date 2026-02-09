@@ -73,6 +73,7 @@ const navItems: NavItem[] = [
       { name: "Danh mục hàng hóa", href: "/products/list" },
       { name: "Nhóm hàng hóa", href: "/products/groups" },
       { name: "Đơn vị tính", href: "/products/units" },
+      { name: "Nhóm đơn vị tính", href: "/products/unit-group" },
     ]
   },
   {
