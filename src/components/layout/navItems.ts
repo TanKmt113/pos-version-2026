@@ -70,9 +70,9 @@ const navItems: NavItem[] = [
     name: "Quản lý hàng hóa",
     icon: Package,
     children: [
-      { name: "Danh mục hàng hóa", href: "/system/products" },
+      { name: "Danh mục hàng hóa", href: "/products/items" },
       { name: "Nhóm hàng hóa", href: "/system/product-groups" },
-      { name: "Đơn vị tính", href: "/system/product-units" },
+      { name: "Đơn vị tính", href: "/products/units" },
     ]
   },
   {

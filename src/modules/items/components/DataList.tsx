@@ -1,6 +1,5 @@
 /**
  * Units DataList Component
- * Ví dụ sử dụng Generic DataTable cho Units
  */
 
 "use client";
@@ -13,12 +12,11 @@ import {
   createDefaultActions,
 } from "@/components/ui/DataTableActions";
 import type { DataTableColumn } from "@/shared/types/dataTable";
-import { UnitOfMeasures } from "../types";
+import { IProduct } from "../types";
 import { Badge } from "@/components/ui/Badge";
-import { DeleteConfirmDialog } from "@/components/ui/DeleteConfirmDialog";
 import { toast } from "sonner";
 import { formatDate } from "@/shared/utils/useFormatDate";
-import { useUnits, useDeleteUnit } from "../hooks";
+import { useItems } from "../hooks";
 
 interface DataListUnitsProps {
   searchTerm?: string;
@@ -30,9 +28,9 @@ export default function DataListUnits({
   statusFilter = "all",
 }: DataListUnitsProps) {
   const router = useRouter();
-  const [selectedRows, setSelectedRows] = useState<UnitOfMeasures[]>([]);
+  const [selectedRows, setSelectedRows] = useState<IProduct[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<UnitOfMeasures | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<IProduct | null>(null);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
   // Debounce search term
@@ -45,13 +43,11 @@ export default function DataListUnits({
   }, [searchTerm]);
 
   // Use hooks for data fetching and delete
-  const { data, loading, error, refetch, setPage, currentPage } = useUnits({
+  const { data, loading, error, refetch, setPage, currentPage } = useItems({
     pageSize: 20,
     searchTerm: debouncedSearchTerm,
     isActive: statusFilter,
   });
-
-  const { deleteUnit, loading: deleting } = useDeleteUnit();
 
   // Show error toast if any
   useEffect(() => {
@@ -61,77 +57,76 @@ export default function DataListUnits({
   }, [error]);
 
   // Column definitions
-  const columns: DataTableColumn<UnitOfMeasures>[] = [
+  const columns: DataTableColumn<IProduct>[] = [
     {
-      key: "uomCode",
-      header: "Mã đơn vị",
+      key: "itemCode",
+      header: "Mã hàng",
       width: "w-[150px]",
-      accessor: (row) => row.uomCode,
     },
     {
-      key: "uomName",
-      header: "Tên đơn vị",
-      accessor: (row) => row.uomName,
+      key: "itemName",
+      header: "Tên hàng",
+      width: "w-[200px]",
+    },
+    {
+      key: "foreignName",
+      header: "Tên nước ngoài",
+      width: "w-[200px]",
+    },
+    {
+      key: "itemType",
+      header: "Loại hàng",
+      width: "w-[120px]",
     },
     {
       key: "isActive",
       header: "Trạng thái",
       width: "w-[120px]",
-      render: (row) => (
-        <Badge variant={row.isActive ? "success" : "secondary"}>
-          {row.isActive ? "Hoạt động" : "Không hoạt động"}
-        </Badge>
-      ),
+    },
+    {
+      key: "isSellable",
+      header: "Được bán",
+      width: "w-[100px]",
+    },
+    {
+      key: "isPurchasable",
+      header: "Được mua",
+      width: "w-[100px]",
+    },
+    {
+      key: "salePrice",
+      header: "Giá bán",
+      width: "w-[120px]",
     },
     {
       key: "createdAt",
       header: "Ngày tạo",
-      width: "w-[150px]",
-      render: (row) => (
-        <span className="text-muted-foreground">
-          {formatDate(row.createdAt)}
-        </span>
-      ),
+      width: "w-[180px]",
     },
     {
       key: "creator",
       header: "Người tạo",
       width: "w-[150px]",
-      accessor: (row) => row.creator,
     },
   ];
 
   // Handle edit
-  const handleEdit = (row: UnitOfMeasures) => {
+  const handleEdit = (row: IProduct) => {
     router.push(`/products/units/${row.id}`);
   };
 
   // Handle delete
-  const handleDelete = (row: UnitOfMeasures) => {
+  const handleDelete = (row: IProduct) => {
     setItemToDelete(row);
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = async () => {
-    if (!itemToDelete) return;
-
-    const success = await deleteUnit(itemToDelete.id);
-    if (success) {
-      toast.success(`Đã xóa "${itemToDelete.uomName}" thành công`);
-      setDeleteDialogOpen(false);
-      setItemToDelete(null);
-      refetch();
-      router.refresh();
-    }
-  };
-
-  // Render actions
-  const renderActions = (row: UnitOfMeasures) => (
+  const renderActions = (row: IProduct) => (
     <DataTableActions
       row={row}
       actions={createDefaultActions({
         onEdit: handleEdit,
-        onDelete: handleDelete, 
+        onDelete: handleDelete,
       })}
     />
   );
@@ -142,7 +137,7 @@ export default function DataListUnits({
         data={data?.items || []}
         columns={columns}
         loading={loading}
-        emptyMessage="Không có đơn vị tính nào"
+        emptyMessage="Không có sản phẩm nào"
         selectable
         selectedRows={selectedRows}
         onSelectionChange={setSelectedRows}
@@ -162,16 +157,6 @@ export default function DataListUnits({
             : undefined
         }
         onRowClick={(row) => console.log("Row clicked:", row)}
-      />
-
-      {/* Delete Confirmation Dialog */}
-      <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        itemName={itemToDelete?.uomName || ""}
-        entityType="đơn vị tính"
-        onConfirm={confirmDelete}
-        isDeleting={deleting}
       />
     </>
   );

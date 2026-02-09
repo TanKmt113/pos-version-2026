@@ -44,4 +44,14 @@ export interface ApiResponse<PaginatedItems> {
   value: PaginatedItems[];
 }
 
+export interface IItemFormData {
+  itemCode: string;
+  itemName: string;
+  foreignName: string;
+  itemType: string;
+  isActive: boolean;
+  isSellable: boolean;
+  isPurchasable: boolean;
+  salePrice: number;
+}
 
