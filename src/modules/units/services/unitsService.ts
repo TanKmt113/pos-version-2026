@@ -36,7 +36,7 @@ class UomService extends BaseService {
           // Search filter (tìm kiếm theo mã hoặc tên)
           if (filters.searchTerm && filters.searchTerm.trim()) {
             filterBuilder = filterBuilder
-              .group(g => 
+              .group(g =>
                 g.contains('uomCode', filters.searchTerm!)
                   .or()
                   .contains('uomName', filters.searchTerm!)
@@ -57,7 +57,7 @@ class UomService extends BaseService {
 
       const queryString = queryBuilder.buildQueryString();
       const url = queryString ? `${this.baseUrl}?${queryString}` : this.baseUrl;
-      
+
       const response = await this.http.get<PagedResult<UnitOfMeasures>>(url);
       return response.data;
     } catch (error) {
@@ -197,7 +197,7 @@ class UomService extends BaseService {
       this.logActivity(`Đã xóa đơn vị tính: ${id}`);
     } catch (error) {
       console.error('Delete error details:', error);
-      
+
       if (this.isApiError(error)) {
         if (error.status === 404) {
           throw new ApiError(
@@ -216,7 +216,7 @@ class UomService extends BaseService {
           );
         }
       }
-      
+
       this.logError(error, 'UomService.delete');
       throw error;
     }
