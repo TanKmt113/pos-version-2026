@@ -28,7 +28,7 @@ export  function useUnitsGroup({ pageIndex = 1, pageSize = 20, searchTerm = '', 
   try {
     // api
   } catch (err: any) {
-    const errorMessage = err?.error || err?.message || 'Không thể tải danh sách đơn vị tính';
+    const errorMessage = err?.error || err?.message || 'Không thể tải danh sách nhóm đơn vị tính';
       setError(errorMessage);
       console.error('useUnits error:', err);
   } finally {

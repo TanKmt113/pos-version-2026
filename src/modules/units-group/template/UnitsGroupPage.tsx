@@ -26,7 +26,7 @@ export default function UnitsGroupPage() {
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
-            <Link href="/products/units/create">
+            <Link href="/products/unit-group/create">
               <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Thêm nhóm đơn vị tính
