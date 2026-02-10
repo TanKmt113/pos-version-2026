@@ -41,7 +41,7 @@ export default function ProductsList() {
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
-            <Link href="/products/units/create">
+            <Link href="/products/items/create">
               <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Thêm sản phẩm

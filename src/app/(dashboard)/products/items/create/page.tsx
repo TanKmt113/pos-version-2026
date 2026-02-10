@@ -1,3 +1,3 @@
-import CreateUnitPage from '@/modules/items/components/CreateUnitPage';
+import CreateUnitPage from '@/modules/items/components/CreateItemPage';
 
 export default CreateUnitPage;

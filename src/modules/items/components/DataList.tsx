@@ -118,7 +118,7 @@ export default function DataListUnits({
 
   // Handle edit
   const handleEdit = (row: IProduct) => {
-    router.push(`/products/items/${row.id}`);
+    router.push(`/products/items/${row.id}/edit`);
   };
 
   // Handle view
@@ -144,7 +144,7 @@ export default function DataListUnits({
   );
 
   return (
-    <>aaa
+    <> 
       <DataTable
         data={data?.items || []}
         columns={columns}

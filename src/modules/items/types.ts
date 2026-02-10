@@ -97,7 +97,7 @@ export interface ItemDetail {
   itemName: string
   foreignName: string
   itemType: string
-
+  itemGroupId: string
   isActive: boolean
   isSellable: boolean
   isPurchasable: boolean
@@ -133,5 +133,5 @@ export interface ItemDetail {
   barcodes: ItemBarcode[]
   itemUoms: ItemUom[]
   documents: ItemDocument[]
-} 
+}
 export type ItemDetailResponse = ApiResponseDetail<ItemDetail>

@@ -1,5 +1,5 @@
 import { BaseService } from '@/shared/base/baseService';
-import { IProduct } from "../types";
+import { IProduct, ItemDetail, ItemDetailResponse } from "../types";
 import { QueryOptionsBuilder } from '@/shared/utils/queryOptionsBuilder';
 import { PagedResult } from '@/shared/types/api';
 import { ApiError } from '@/infrastructure/api-clients/httpClient';
@@ -56,10 +56,10 @@ class ItemService extends BaseService {
     }
   }
 
-  async getById(id: string): Promise<IProduct> {
+  async getById(id: string): Promise<ItemDetail> {
     try {
       const url = `${this.baseUrl}/${id}`;
-      const response = await this.http.get<IProduct>(url);
+      const response = await this.http.get<ItemDetail>(url);
       return response.data;
     } catch (error) {
       this.logError(error, 'ItemService.getById');
@@ -72,6 +72,15 @@ class ItemService extends BaseService {
       await this.http.post(this.baseUrl, data);
     } catch (error) {
       this.logError(error, 'ItemService.create');
+      throw error;
+    }
+  }
+
+  async update(id: string, data: Partial<IProduct>): Promise<void> {
+    try {
+      await this.http.put(`${this.baseUrl}/${id}`, data);
+    } catch (error) {
+      this.logError(error, 'ItemService.update');
       throw error;
     }
   }

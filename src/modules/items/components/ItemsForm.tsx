@@ -1,16 +1,5 @@
-/**
- * Units Form Component
- * Form tái sử dụng cho Create và Edit Units
- */
-
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Switch } from "@/components/ui/Switch";
 import {
   Card,
   CardContent,
@@ -18,62 +7,165 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
-import { IItemFormData } from "../types";
-import { useCreateItem } from "../hooks";
-import { toast } from "sonner";
-import { formatDateTime } from "@/shared/utils/useFormatDate";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/RadioGroup";
+import { Switch } from "@/components/ui/Switch";
+import { Textarea } from "@/components/ui/Textarea";
+import { useItemById } from "../hooks/useDetailItem"; // Import useItemById
+import { useSaveItem } from "../hooks/useSaveItem"; // Import useSaveItem
+
+import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Loader2, Save } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { ItemDetail } from "../types"; // Import ItemDetail for type safety
 
-export interface UnitsFormProps {
-  /** Initial data cho edit mode */
-  initialData?: IItemFormData;
-  /** Mode: create hoặc edit */
+export interface ItemsFormProps {
+  itemId?: string; // Optional itemId for edit mode
   mode: "create" | "edit";
 }
 
-export function ItemsForm({ initialData, mode }: UnitsFormProps) {
+export function ItemsForm({ itemId, mode }: ItemsFormProps) {
   const router = useRouter();
-  const { create, loading: creating } = useCreateItem();
-  // const { update, loading: updating } = useUpdateUnit();
+  const { save, loading: saving } = useSaveItem();
+  const {
+    data: itemData,
+    loading: fetching,
+    error: fetchError,
+  } = useItemById(itemId || null); // Fetch data if itemId is provided
 
-  // const loading = creating || updating;
-  const loading = creating;
+  const loading = saving || fetching; // Combined loading state
 
-  const [formData, setFormData] = useState({
-    itemCode: initialData?.itemCode || "",
-    itemName: initialData?.itemName || "",
-    foreignName: initialData?.foreignName || "",
-    itemType: initialData?.itemType || "",
-    isActive: initialData?.isActive ?? true,
+  const [formData, setFormData] = useState<ItemDetail>({
+    id: itemId || "",  
+    itemCode: "",
+    itemName: "",
+    foreignName: "",
+    itemType: "",
+    unitOfMeasureGroupId: "",
+    itemGroupId: "",
+    itemCodePrefixId: "",
+    freeText: "",
+    manageBatchNumber: false,
+    manageSerialNumber: false,
+    priceManagementType: "",
+    isSellable: true,
+    isPurchasable: true,
+    isOrderable: true,
+    isExchangeable: true,
+    hasWarranty: false,
+    salePrice: 0,
+    purchasePrice: 0,
+    origin: "",
+    manufacturer: "",
+    manufactureYear: new Date().getFullYear(),
+    isActive: true,
+    createdAt: "",
+    creator: "",
+    updateDate: "",
+    updator: "",
+    barcodes: [],
+    itemUoms: [],
+    documents: [],
+    unitOfMeasureGroupName: "",
+    itemCodePrefixCode: "",
+    itemCodePrefixName: "",
   });
+
+  // Populate form data when itemData is fetched (for edit mode)
+  useEffect(() => {
+    if (mode === "edit" && itemData) {
+      setFormData((prevData) => ({
+        ...prevData,
+        ...itemData,
+        // Ensure priceManagementType is a string for RadioGroup
+        priceManagementType: String(itemData.priceManagementType),
+      }));
+    }
+  }, [itemData, mode]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSwitchChange = (id: string, checked: boolean) => {
+    setFormData((prev) => ({ ...prev, [id]: checked }));
+  };
+
+  const handleRadioChange = (id: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const dataToSave = {
+      ...formData,
+      priceManagementType: Number(formData.priceManagementType),
+    };
+
+    const result = await save(itemId || null, dataToSave as any);
+    if (result) {
+      toast.success(
+        mode === "create" ? "Tạo sản phẩm thành công" : "Cập nhật thành công",
+      );
+      router.push("/products/items");
+    } else {
+      toast.error(
+        mode === "create" ? "Tạo sản phẩm thất bại" : "Cập nhật thất bại",
+      );
+    }
   };
 
   const handleCancel = () => {
-    router.push("/products/units");
+    router.push("/products/items");
   };
+
+  if (fetching) {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center p-6">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="flex min-h-[300px] flex-col items-center justify-center text-center">
+        <h3 className="text-lg font-semibold text-destructive">
+          Lỗi tải dữ liệu
+        </h3>
+        <p className="text-sm text-muted-foreground">{fetchError}</p>
+        <Button onClick={() => window.location.reload()} className="mt-4">
+          Thử lại
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/products/units">
+          <Link href="/products/items">
             <Button type="button" variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
-              {mode === "create" ? "Thêm đơn vị tính" : "Chỉnh sửa đơn vị tính"}
+              {mode === "create" ? "Thêm sản phẩm" : "Chỉnh sửa sản phẩm"}
             </h1>
             <p className="text-muted-foreground">
               {mode === "create"
-                ? "Tạo đơn vị tính mới trong hệ thống"
-                : "Cập nhật thông tin đơn vị tính"}
+                ? "Tạo sản phẩm mới trong hệ thống"
+                : "Cập nhật thông tin sản phẩm"}
             </p>
           </div>
         </div>
@@ -102,96 +194,251 @@ export function ItemsForm({ initialData, mode }: UnitsFormProps) {
         </div>
       </div>
 
-      {/* Form Content */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Main Form */}
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
           <Card>
             <CardHeader>
               <CardTitle>Thông tin cơ bản</CardTitle>
               <CardDescription>
-                Nhập thông tin chi tiết về đơn vị tính
+                Thông tin nhận diện và phân loại sản phẩm.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Mã đơn vị */}
+            <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="uomCode">
-                  Mã đơn vị tính <span className="text-destructive">*</span>
-                </Label>
+                <Label htmlFor="itemCode">Mã sản phẩm</Label>
                 <Input
                   id="itemCode"
-                  placeholder="VD: KG, M, L..."
+                  placeholder="Mã tự động nếu bỏ trống"
                   value={formData.itemCode}
-                  onChange={(e) =>
-                    setFormData({ ...formData, itemCode: e.target.value })
-                  }
+                  onChange={handleInputChange}
                   disabled={loading || mode === "edit"}
-                  required
                 />
-                {mode === "edit" && (
-                  <p className="text-sm text-muted-foreground">
-                    Mã đơn vị không thể thay đổi
-                  </p>
-                )}
               </div>
-
-              {/* Tên đơn vị */}
               <div className="space-y-2">
                 <Label htmlFor="itemName">
-                  Tên đơn vị tính <span className="text-destructive">*</span>
+                  Tên sản phẩm <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="itemName"
-                  placeholder="VD: Kilogram, Mét, Lít..."
+                  placeholder="Nhập tên sản phẩm"
                   value={formData.itemName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, itemName: e.target.value })
-                  }
+                  onChange={handleInputChange}
                   disabled={loading}
                   required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="foreignName">Tên nước ngoài</Label>
+                <Input
+                  id="foreignName"
+                  value={formData.foreignName}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="itemGroupId">Nhóm sản phẩm</Label>
+                <Input
+                  id="itemGroupId"
+                  placeholder="Chọn nhóm sản phẩm"
+                  value={formData.itemGroupId}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="unitOfMeasureGroupId">Nhóm đơn vị tính</Label>
+                <Input
+                  id="unitOfMeasureGroupId"
+                  placeholder="Chọn nhóm ĐVT"
+                  value={formData.unitOfMeasureGroupId}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Giá sản phẩm</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="purchasePrice">Giá mua</Label>
+                <Input
+                  id="purchasePrice"
+                  type="number"
+                  value={formData.purchasePrice}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="salePrice">Giá bán</Label>
+                <Input
+                  id="salePrice"
+                  type="number"
+                  value={formData.salePrice}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Thông tin bổ sung</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="origin">Xuất xứ</Label>
+                <Input
+                  id="origin"
+                  value={formData.origin}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="manufacturer">Nhà sản xuất</Label>
+                <Input
+                  id="manufacturer"
+                  value={formData.manufacturer}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="manufactureYear">Năm sản xuất</Label>
+                <Input
+                  id="manufactureYear"
+                  type="number"
+                  value={formData.manufactureYear}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="freeText">Mô tả</Label>
+                <Textarea
+                  id="freeText"
+                  placeholder="Mô tả chi tiết về sản phẩm"
+                  value={formData.freeText}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  rows={4}
                 />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-6 lg:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle>Trạng thái</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="isActive">Hoạt động</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Cho phép sử dụng đơn vị tính này
-                  </p>
-                </div>
+                <Label htmlFor="isActive" className="cursor-pointer">
+                  Kinh doanh
+                </Label>
                 <Switch
                   id="isActive"
                   checked={formData.isActive}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isActive: checked })
-                  }
+                  onCheckedChange={(c) => handleSwitchChange("isActive", c)}
                   disabled={loading}
                 />
               </div>
             </CardContent>
           </Card>
-
-          {mode === "edit" && initialData && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Thông tin khác</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <>content</>
-              </CardContent>
-            </Card>
-          )}
+          <Card>
+            <CardHeader>
+              <CardTitle>Thuộc tính</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {[
+                { id: "isSellable", label: "Được bán" },
+                { id: "isPurchasable", label: "Được mua" },
+                { id: "isOrderable", label: "Hàng đặt" },
+                { id: "isExchangeable", label: "Được đổi trả" },
+                { id: "hasWarranty", label: "Có bảo hành" },
+              ].map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between"
+                >
+                  <Label htmlFor={item.id} className="cursor-pointer">
+                    {item.label}
+                  </Label>
+                  <Switch
+                    id={item.id}
+                    checked={
+                      formData[item.id as keyof typeof formData] as boolean
+                    }
+                    onCheckedChange={(c) => handleSwitchChange(item.id, c)}
+                    disabled={loading}
+                  />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Quản lý</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="manageSerialNumber" className="cursor-pointer">
+                  Quản lý Serial
+                </Label>
+                <Switch
+                  id="manageSerialNumber"
+                  checked={formData.manageSerialNumber}
+                  onCheckedChange={(c) =>
+                    handleSwitchChange("manageSerialNumber", c)
+                  }
+                  disabled={loading}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="manageBatchNumber" className="cursor-pointer">
+                  Quản lý theo lô
+                </Label>
+                <Switch
+                  id="manageBatchNumber"
+                  checked={formData.manageBatchNumber}
+                  onCheckedChange={(c) =>
+                    handleSwitchChange("manageBatchNumber", c)
+                  }
+                  disabled={loading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Quản lý giá vốn</Label>
+                {/* <RadioGroup
+                  defaultValue={String(formData.priceManagementType)}
+                  onValueChange={(v) =>
+                    setFormData((p) => ({ ...p, priceManagementType: Number(v) }))
+                  }
+                  className="mt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="0" id="pmt-0" />
+                    <Label htmlFor="pmt-0">Giá TB di động</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="1" id="pmt-1" />
+                    <Label htmlFor="pmt-1">Giá đích danh</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="2" id="pmt-2" />
+                    <Label htmlFor="pmt-2">Nhập trước, Xuất trước</Label>
+                  </div>
+                </RadioGroup> */}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </form>

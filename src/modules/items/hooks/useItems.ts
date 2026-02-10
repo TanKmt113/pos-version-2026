@@ -35,13 +35,11 @@ export function useItems({
   const fetchData = async () => {
     setLoading(true);
     setError(null);
-
     try {
-
       const result = await itemService.getAll(currentPage, pageSize, {
         searchTerm,
         isActive,
-      });
+      }); 
       setData(result);
     } catch (err: any) {
       const errorMessage = err?.error || err?.message || 'Không thể tải danh sách sản phẩm';
@@ -53,9 +51,8 @@ export function useItems({
   };
 
   useEffect(() => {
-    if (autoLoad) {
-      fetchData();
-    }
+    if (autoLoad) 
+      fetchData(); 
   }, [currentPage, searchTerm, isActive]);
 
   return {
