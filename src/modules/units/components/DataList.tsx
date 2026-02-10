@@ -163,8 +163,7 @@ export default function DataListUnits({
         }
         onRowClick={(row) => console.log("Row clicked:", row)}
       />
-
-      {/* Delete Confirmation Dialog */}
+ 
       <DeleteConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}

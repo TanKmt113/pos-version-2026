@@ -4,12 +4,12 @@
 
 'use client';
 
-import { UnitsForm } from './ItemsForm';
+import { ItemsForm } from './ItemsForm';
 
 export default function CreateUnitPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
-      <UnitsForm mode="create" />
+      <ItemsForm mode="create" />
     </div>
   );
 }

@@ -12,7 +12,7 @@ export interface IItemRequest {
 }
 
 export interface IProduct {
-  id: string; 
+  id: string;
   itemCode: string;
   itemName: string;
   foreignName: string;
@@ -21,7 +21,7 @@ export interface IProduct {
   isSellable: boolean;
   isPurchasable: boolean;
   salePrice: number;
-  createdAt: string; 
+  createdAt: string;
   creator: string;
 }
 
@@ -55,3 +55,83 @@ export interface IItemFormData {
   salePrice: number;
 }
 
+// CHi tiết sản phẩm
+
+export interface ApiResponseDetail<T> {
+  isSuccess: boolean
+  code: string
+  error: string | null
+  errors: string[]
+  isFailure: boolean
+  value: T
+}
+export interface ItemBarcode {
+  id: string
+  barcodeCode: string
+  barcodeName: string
+  unitOfMeasureId: string
+  unitOfMeasureName: string
+}
+export interface ItemUom {
+  id: string
+  uomType: string
+  unitOfMeasureId: string
+  unitOfMeasureName: string
+  defaultBarcodeId: string
+}
+export interface ItemDocument {
+  id: string
+  sourcePath: string
+  fileName: string
+  fileExtension: string
+  fileSize: number
+  isPrimary: boolean
+  isImage: boolean
+  documentType: string
+  note: string
+  uploadDate: string // ISO Date
+}
+export interface ItemDetail {
+  id: string
+  itemCode: string
+  itemName: string
+  foreignName: string
+  itemType: string
+
+  isActive: boolean
+  isSellable: boolean
+  isPurchasable: boolean
+  isOrderable: boolean
+  isExchangeable: boolean
+  hasWarranty: boolean
+
+  salePrice: number
+  purchasePrice: number
+
+  createdAt: string
+  creator: string
+  updateDate: string
+  updator: string
+
+  freeText: string
+
+  unitOfMeasureGroupId: string
+  unitOfMeasureGroupName: string
+
+  itemCodePrefixId: string
+  itemCodePrefixCode: string
+  itemCodePrefixName: string
+
+  manageBatchNumber: boolean
+  manageSerialNumber: boolean
+  priceManagementType: string
+
+  origin: string
+  manufacturer: string
+  manufactureYear: number
+
+  barcodes: ItemBarcode[]
+  itemUoms: ItemUom[]
+  documents: ItemDocument[]
+} 
+export type ItemDetailResponse = ApiResponseDetail<ItemDetail>

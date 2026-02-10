@@ -81,7 +81,7 @@ export function createDefaultActions<T>({
   onView,
   onEdit,
   onDelete,
-  showView = false,
+  showView = true,
   showEdit = true,
   showDelete = true,
 }: {
