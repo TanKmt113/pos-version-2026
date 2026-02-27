@@ -215,12 +215,3 @@ Tạo chi nhánh mới để bắt đầu vận hành, đồng thời khởi t�
 ---
 
 ## Sơ đồ tổng quan quy trình
-
-![Sơ đồ tổng quan quy trình thêm mới chi nhánh](./add-branch-diagram.png)
-
----
-
-## Lưu ý triển khai
-- Chuẩn hóa lỗi trả về, highlight đúng field trên UI
-- Hỗ trợ Idempotency-Key cho POST tránh tạo trùng
-- DB cần unique index code, name để chống race khi tạo đồng thời
