@@ -99,7 +99,9 @@ Tạo chi nhánh mới để bắt đầu vận hành, đồng thời khởi t�
 }
 ```
 
-### Output thành công (Happy path)
+### Output các trường hợp
+
+#### 1. Thành công (Success)
 ```json
 {
   "success": true,
@@ -116,106 +118,105 @@ Tạo chi nhánh mới để bắt đầu vận hành, đồng thời khởi t�
 }
 ```
 
-### Các trường hợp lỗi phổ biến
-- Trùng tên/mã chi nhánh
-- Sai định dạng phone/email
-- Địa chỉ không hợp lệ
-- manager_id không tồn tại hoặc đã được gán
-
----
-
-## Sơ đồ Use Case (PlantUML)
-```plantuml
-@startuml
-left to right direction
-actor "Super Admin" as SA
-rectangle "Back Office System" {
-  usecase "UC-1.4.1\nThêm mới chi nhánh" as UC1
-  usecase "Xác thực dữ liệu" as UC1a
-  usecase "Tạo Default Warehouse" as UC1b
-  usecase "Tạo nhóm quyền mặc định" as UC1c
-  usecase "Ghi log lịch sử" as UC1d
-  usecase "Phát event BRANCH_CREATED" as UC1e
-  usecase "Gửi email cho Branch Manager" as UC1f
+#### 2. Lỗi trùng tên chi nhánh
+```json
+{
+  "success": false,
+  "error": {
+    "code": "BRANCH_NAME_DUPLICATED",
+    "field": "name",
+    "message": "Tên chi nhánh đã tồn tại"
+  }
 }
-SA --> UC1
-UC1 .> UC1a : <<include>>
-UC1 .> UC1b : <<include>>
-UC1 .> UC1c : <<include>>
-UC1 .> UC1d : <<include>>
-UC1 .> UC1e : <<include>>
-UC1 .> UC1f : <<include>>
-actor "LocationService" as LS
-actor "Inventory Service" as IS
-actor "Reporting Service" as RS
-actor "CRM System" as CRM
-actor "Email Service" as ES
-queue "Message Queue" as MQ
-UC1a --> LS
-UC1e --> MQ
-MQ --> IS
-MQ --> RS
-MQ --> CRM
-UC1f --> ES
-@enduml
+```
+
+#### 3. Lỗi trùng mã chi nhánh
+```json
+{
+  "success": false,
+  "error": {
+    "code": "BRANCH_CODE_DUPLICATED",
+    "field": "code",
+    "message": "Mã chi nhánh đã tồn tại"
+  }
+}
+```
+
+#### 4. Lỗi định dạng phone/email
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Dữ liệu không hợp lệ",
+    "details": [
+      { "field": "phone", "message": "Số điện thoại không đúng định dạng" },
+      { "field": "email", "message": "Email không đúng định dạng" }
+    ]
+  }
+}
+```
+
+#### 5. Lỗi địa chỉ không hợp lệ (LocationService)
+```json
+{
+  "success": false,
+  "error": {
+    "code": "LOCATION_INVALID",
+    "message": "Địa chỉ không tồn tại hoặc không hợp lệ",
+    "details": [
+      { "field": "ward_id", "message": "Phường/Xã không hợp lệ" }
+    ]
+  }
+}
+```
+
+#### 6. Lỗi manager_id không tồn tại
+```json
+{
+  "success": false,
+  "error": {
+    "code": "MANAGER_NOT_FOUND",
+    "field": "manager_id",
+    "message": "Không tìm thấy nhân viên quản lý"
+  }
+}
+```
+
+#### 7. Lỗi manager đã quản lý chi nhánh khác
+```json
+{
+  "success": false,
+  "error": {
+    "code": "MANAGER_ALREADY_ASSIGNED",
+    "field": "manager_id",
+    "message": "Nhân viên này đã được gán quản lý cho chi nhánh khác"
+  }
+}
+```
+
+#### 8. Thành công (async) – Tạo branch OK, đồng bộ qua event xử lý sau
+```json
+{
+  "success": true,
+  "data": {
+    "id": 101,
+    "code": "HN_CAU_GIAY_01",
+    "name": "POS Hà Nội - Cầu Giấy 01",
+    "status": "ACTIVE",
+    "default_warehouse_id": 301,
+    "created_at": "2026-02-24T09:00:00Z",
+    "created_by": 1
+  },
+  "message": "Thêm mới chi nhánh thành công"
+}
 ```
 
 ---
 
-## Sơ đồ trình tự (Sequence Diagram - Happy Path)
-```plantuml
-@startuml
-autonumber
-actor "Super Admin" as SA
-boundary "Back Office UI" as UI
-control "Branch API/Service" as BranchSvc
-control "Validation" as Val
-entity "Branch DB" as DB
-control "LocationService" as LocSvc
-control "Warehouse Service" as WhSvc
-control "RBAC/Permission Service" as RbacSvc
-control "Audit Log Service" as AuditSvc
-queue "Message Queue" as MQ
-control "Inventory Service" as InvSvc
-control "Reporting Service" as RepSvc
-control "CRM System" as CrmSvc
-control "Email Service" as EmailSvc
-SA -> UI : Mở "Quản lý chi nhánh"\nChọn "Thêm chi nhánh mới"
-UI -> BranchSvc : POST /branches (input JSON)
-BranchSvc -> Val : Validate required fields\n+ phone/email format\n+ open/close time
-Val --> BranchSvc : OK
-BranchSvc -> DB : Check unique(name, code)
-DB --> BranchSvc : Not exists
-BranchSvc -> LocSvc : Validate address(ward_id,\ndistrict_id, city_id, address_line)
-LocSvc --> BranchSvc : Address valid
-BranchSvc -> DB : Check manager_id exists\nand not assigned
-DB --> BranchSvc : OK
-BranchSvc -> DB : Insert Branch(status=ACTIVE)\nreturn branch_id
-DB --> BranchSvc : branch_id=101
-BranchSvc -> WhSvc : Create default warehouse(branch_id=101)
-WhSvc --> BranchSvc : default_warehouse_id=301
-BranchSvc -> RbacSvc : Create default roles/groups\nfor branch_id=101
-RbacSvc --> BranchSvc : OK
-BranchSvc -> AuditSvc : Write audit log\n(BRANCH_CREATED by created_by)
-AuditSvc --> BranchSvc : OK
-BranchSvc -> MQ : Publish event BRANCH_CREATED\n(branch_id=101, warehouse_id=301)
-MQ --> BranchSvc : ACK
-par Async consumers
-  MQ -> InvSvc : BRANCH_CREATED
-  InvSvc --> MQ : ACK (init inventory)
-and
-  MQ -> RepSvc : BRANCH_CREATED
-  RepSvc --> MQ : ACK (create dashboard)
-and
-  MQ -> CrmSvc : BRANCH_CREATED
-  CrmSvc --> MQ : ACK (update location list)
-end
-BranchSvc -> EmailSvc : Send email to Branch Manager\n(manager_id=50)
-EmailSvc --> BranchSvc : Accepted
-BranchSvc --> UI : 200 OK (success=true + data)
-UI --> SA : Thông báo thành công\n+ chuyển trang chi tiết
-@enduml
-```
+## Sơ đồ tổng quan quy trình
+
+![Sơ đồ tổng quan quy trình thêm mới chi nhánh](./add-branch-diagram.png)
 
 ---
 
